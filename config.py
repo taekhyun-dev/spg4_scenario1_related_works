@@ -48,9 +48,10 @@ IOT_FLYOVER_THRESHOLD_DEG = 30.0
 GS_FLYOVER_THRESHOLD_DEG = 10.0
 
 # === 공통: 데이터 ===
-NUM_CLIENTS = 50
+NUM_CLIENTS = 238               # 위성 수와 동일 (이전: 50으로 modulo 재사용)
 DIRICHLET_ALPHA = 0.5
 BATCH_SIZE = 128
+SAMPLES_PER_CLIENT = 2000       # 위성당 학습 데이터 수 (독립 샘플링, 중복 허용)
 
 # === 공통: 평가/필터링 ===
 EVAL_EVERY_N_ROUNDS = 5

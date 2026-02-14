@@ -278,6 +278,12 @@ class Satellite_Manager:
     def _is_trained_since_global(self, sat_id) -> bool:
         return self.satellite_last_trained_version[sat_id] > self.global_model_wrapper.version
 
+    @staticmethod
+    def _is_gradient_param(key: str, tensor: torch.Tensor) -> bool:
+        """pseudo-gradient 연산 대상인지 판별.
+        BatchNorm의 num_batches_tracked(int64) 등 non-float 텐서는 제외."""
+        return tensor.is_floating_point()
+
     def _staleness_function(self, staleness: float) -> float:
         """s(τ) = 1/(1+τ)^0.5 — FedAsync/FedBuff 공통"""
         if FEDASYNC_STALENESS_FUNC == "poly":
@@ -447,9 +453,12 @@ class Satellite_Manager:
             total_s = float(K)
 
         for key in global_sd.keys():
+            if not self._is_gradient_param(key, global_sd[key]):
+                # num_batches_tracked 등 non-float → 글로벌 값 그대로 유지
+                delta_avg[key] = None
+                continue
             delta = torch.zeros_like(global_sd[key], dtype=torch.float32)
             for m in self.gs_buffer:
-                # Δ_i = w_global - w_local (학습으로 파라미터가 줄어든 방향)
                 pseudo_grad = global_sd[key].float() - m["state_dict"][key].float()
                 delta += (m["s_tau"] / total_s) * pseudo_grad
 
@@ -461,20 +470,27 @@ class Satellite_Manager:
         if self.server_momentum_state is None:
             self.server_momentum_state = OrderedDict()
             for key in delta_avg:
-                self.server_momentum_state[key] = delta_avg[key].clone()
+                if delta_avg[key] is not None:
+                    self.server_momentum_state[key] = delta_avg[key].clone()
         else:
             for key in delta_avg:
-                self.server_momentum_state[key] = (
-                    β * self.server_momentum_state[key] + delta_avg[key]
-                )
+                if delta_avg[key] is not None and key in self.server_momentum_state:
+                    self.server_momentum_state[key] = (
+                        β * self.server_momentum_state[key] + delta_avg[key]
+                    )
 
         # w_{t+1} = w_t - η_g · m_t
         η_g = FEDBUFF_SERVER_LR
         new_sd = OrderedDict()
         for key in global_sd.keys():
-            new_sd[key] = (
-                global_sd[key].float() - η_g * self.server_momentum_state[key]
-            ).cpu()
+            if not self._is_gradient_param(key, global_sd[key]):
+                new_sd[key] = global_sd[key].clone()  # non-float: 원본 dtype 유지
+            elif key in self.server_momentum_state:
+                new_sd[key] = (
+                    global_sd[key].float() - η_g * self.server_momentum_state[key]
+                ).to(global_sd[key].dtype).cpu()
+            else:
+                new_sd[key] = global_sd[key].clone()
 
         self.sim_logger.info(f"   📐 η_g={η_g}, β={β}, K={K}")
 
@@ -613,11 +629,15 @@ class Satellite_Manager:
 
         aggregated = OrderedDict()
         for key in buf[0]["state_dict"].keys():
+            if not self._is_gradient_param(key, buf[0]["state_dict"][key]):
+                # non-float (num_batches_tracked 등): 첫 번째 위성 값 사용
+                aggregated[key] = buf[0]["state_dict"][key].clone()
+                continue
             param = torch.zeros_like(buf[0]["state_dict"][key], dtype=torch.float32)
             for m in buf:
                 w = m["data_count"] / total_data
                 param += w * m["state_dict"][key].float()
-            aggregated[key] = param.cpu()
+            aggregated[key] = param.to(buf[0]["state_dict"][key].dtype).cpu()
 
         self.sim_logger.info(
             f"   🔗 [FedOrbit ISL] Plane {plane_id}: "
@@ -656,8 +676,11 @@ class Satellite_Manager:
         η_g = FEDORBIT_SERVER_LR
         new_sd = OrderedDict()
         for key in global_sd.keys():
+            if not self._is_gradient_param(key, global_sd[key]):
+                new_sd[key] = global_sd[key].clone()
+                continue
             delta = global_sd[key].float() - plane_sd[key].float()
-            new_sd[key] = (global_sd[key].float() - η_g * delta).cpu()
+            new_sd[key] = (global_sd[key].float() - η_g * delta).to(global_sd[key].dtype).cpu()
 
         self.sim_logger.info(
             f"   🚀 [FedOrbit] Plane {plane_id} Master SAT_{sat_id} → GS Upload "
@@ -843,8 +866,11 @@ class Satellite_Manager:
                         η_g = FEDORBIT_SERVER_LR
                         new_sd = OrderedDict()
                         for key in global_sd.keys():
+                            if not self._is_gradient_param(key, global_sd[key]):
+                                new_sd[key] = global_sd[key].clone()
+                                continue
                             delta = global_sd[key].float() - result["state_dict"][key].float()
-                            new_sd[key] = (global_sd[key].float() - η_g * delta).cpu()
+                            new_sd[key] = (global_sd[key].float() - η_g * delta).to(global_sd[key].dtype).cpu()
                         self._update_global_and_evaluate(
                             new_sd, nv, result["participants"], temp_model, force_eval=True
                         )
