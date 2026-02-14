@@ -42,7 +42,7 @@ from config import (
     FEDORBIT_INTRA_AGG_INTERVAL_SEC, FEDORBIT_SERVER_LR,
     # Common
     BASE_LR, MIN_LR, EVAL_EVERY_N_ROUNDS, STALENESS_THRESHOLD,
-    NUM_CLIENTS, DIRICHLET_ALPHA, BATCH_SIZE
+    NUM_CLIENTS, DIRICHLET_ALPHA, BATCH_SIZE, SAMPLES_PER_CLIENT
 )
 
 from ml.data import get_cifar10_loaders
@@ -97,14 +97,15 @@ class Satellite_Manager:
         self.last_intra_agg_time: Dict[int, datetime] = {}  # plane별 마지막 ISL 집계 시점
 
         self.sim_logger.info(f"Strategy: {self.strategy.upper()}")
-        self.sim_logger.info("CIFAR-10 데이터셋 로드 및 분할 중...")
+        self.sim_logger.info("CIFAR-10 데이터셋 로드 및 샘플링 중...")
 
         self.avg_data_count, self.client_subsets, self.val_loader, _ = get_cifar10_loaders(
             num_clients=self.num_satellites,
             dirichlet_alpha=DIRICHLET_ALPHA,
-            data_root='./data'
+            data_root='./data',
+            samples_per_client=SAMPLES_PER_CLIENT
         )
-        self.sim_logger.info(f"데이터셋 로드 완료. 위성당 평균 데이터 수: {self.avg_data_count:.1f}")
+        self.sim_logger.info(f"데이터셋 로드 완료. 위성당 데이터: {self.avg_data_count:.0f}장")
 
         self.global_model_net = create_resnet9(num_classes=self.NUM_CLASSES)
         self.global_model_net.to('cpu')
