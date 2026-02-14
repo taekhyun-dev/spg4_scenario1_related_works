@@ -49,6 +49,7 @@ from ml.data import get_cifar10_loaders
 from ml.model import create_resnet9, PyTorchModel
 from ml.training import train_model
 from ml.aggregation import calculate_mixing_weight, weighted_update
+from ml.metrics import MetricsCollector
 
 
 class Satellite_Manager:
@@ -111,6 +112,14 @@ class Satellite_Manager:
         self.global_model_net.to('cpu')
         self.global_model_wrapper = PyTorchModel.from_model(self.global_model_net, version=0.0)
         self.best_acc = 0.0
+
+        # --- 성능 지표 수집기 ---
+        self.metrics = MetricsCollector(
+            strategy=self.strategy,
+            num_planes=NUM_PLANES,
+            sats_per_plane=SATS_PER_PLANE,
+            sim_start_time=self.start_time,
+        )
 
         self.sim_logger.info("위성 관리자 생성 완료.")
 
@@ -305,10 +314,13 @@ class Satellite_Manager:
         return τ_ver, 0.0
 
     def _update_global_and_evaluate(self, new_state_dict, new_version,
-                                     participating_ids, temp_model, force_eval=False):
-        """글로벌 모델 업데이트 + 평가 + 체크포인트 (공통)"""
+                                     participating_ids, temp_model, force_eval=False,
+                                     staleness_values=None, sim_time=None,
+                                     plane_id=None):
+        """글로벌 모델 업데이트 + 평가 + 체크포인트 + 메트릭 기록 (공통)"""
         self.global_model_net.load_state_dict(new_state_dict)
 
+        g_acc, g_loss = None, None
         if force_eval or (self.aggregation_round % EVAL_EVERY_N_ROUNDS == 0):
             temp_model.load_state_dict(new_state_dict)
             g_acc, g_loss = self._evaluate_direct(
@@ -341,6 +353,17 @@ class Satellite_Manager:
             version=new_version,
             model_state_dict=new_state_dict,
             trained_by=self.global_model_wrapper.trained_by + participating_ids
+        )
+
+        # ── 메트릭 기록 ──
+        self.metrics.record_aggregation(
+            round_num=self.aggregation_round,
+            sim_time=sim_time or self.start_time,
+            accuracy=g_acc,
+            loss=g_loss,
+            participating_ids=participating_ids,
+            staleness_values=staleness_values or [],
+            plane_id=plane_id,
         )
 
     # ================================================================
@@ -379,7 +402,12 @@ class Satellite_Manager:
             self.global_model_wrapper.model_state_dict,
             local_wrapper.model_state_dict, alpha_eff
         )
-        self._update_global_and_evaluate(new_sd, new_version, [sat_id], temp_model)
+        self._update_global_and_evaluate(
+            new_sd, new_version, [sat_id], temp_model,
+            staleness_values=[τ_ver], sim_time=event_time,
+        )
+
+        self.metrics.record_gs_contact(sat_id, event_time, "upload")
 
         self.satellite_models[sat_id] = PyTorchModel.from_model(
             self.global_model_net, version=new_version
@@ -418,10 +446,11 @@ class Satellite_Manager:
         self.gs_buffer.append({
             "sat_id": sat_id,
             "state_dict": local_wrapper.model_state_dict,
-            "base_version": int(local_wrapper.version),  # 학습 시작 시 글로벌 버전
+            "base_version": int(local_wrapper.version),
             "staleness": τ_ver,
             "s_tau": s_tau,
             "data_count": local_data_count,
+            "event_time": event_time,
         })
         self.sim_logger.info(
             f"   📦 버퍼 추가 (v{local_wrapper.version:.1f}, "
@@ -495,7 +524,18 @@ class Satellite_Manager:
 
         self.sim_logger.info(f"   📐 η_g={η_g}, β={β}, K={K}")
 
-        self._update_global_and_evaluate(new_sd, new_version, participating_ids, temp_model, force_eval)
+        # flush 시점의 staleness 값 수집
+        _staleness_vals = [m["staleness"] for m in self.gs_buffer]
+        _sim_time = self.gs_buffer[-1].get("event_time", self.start_time) if self.gs_buffer else self.start_time
+
+        self._update_global_and_evaluate(
+            new_sd, new_version, participating_ids, temp_model, force_eval,
+            staleness_values=_staleness_vals, sim_time=_sim_time,
+        )
+
+        # 메트릭: GSL upload 기록
+        for m in self.gs_buffer:
+            self.metrics.record_gs_contact(m["sat_id"], _sim_time, "upload")
 
         # 참여 위성 동기화
         for m in self.gs_buffer:
@@ -688,9 +728,19 @@ class Satellite_Manager:
             f"({len(result['participants'])}개 위성)"
         )
 
+        # staleness: plane 내 각 위성의 버전 기반 staleness
+        _staleness_vals = [
+            max(0, self.global_model_wrapper.version - int(m.get("version", 0)))
+            for m in self.plane_buffers.get(plane_id, [])
+        ] or [0]
+
         self._update_global_and_evaluate(
-            new_sd, new_version, result["participants"], temp_model
+            new_sd, new_version, result["participants"], temp_model,
+            staleness_values=_staleness_vals, sim_time=event_time,
+            plane_id=plane_id,
         )
+
+        self.metrics.record_gs_contact(sat_id, event_time, "upload")
 
         # Plane 내 모든 위성 동기화
         for sid in self.get_plane_satellites(plane_id):
@@ -769,6 +819,9 @@ class Satellite_Manager:
                     f"   ✅ SAT_{sat_id} 학습 완료 (LR: {current_lr:.4f}, v{next_version:.1f})"
                 )
 
+                # 메트릭: 학습 기록
+                self.metrics.record_train(sat_id, self.get_plane_id(sat_id), event_time)
+
                 # FedOrbit: 학습 완료 시 plane 버퍼에 자동 수집
                 if self.strategy == "fedorbit":
                     self._fedorbit_intra_plane_collect(sat_id, current_local_wrapper, event_time)
@@ -787,10 +840,12 @@ class Satellite_Manager:
                             self.global_model_net, version=self.global_model_wrapper.version
                         )
                         self.satellite_download_time[sat_id] = event_time
+                        self.metrics.record_gs_contact(sat_id, event_time, "download")
                         self.sim_logger.info(
                             f"   📥 SAT_{sat_id}: 미학습 → v{self.global_model_wrapper.version} 다운로드"
                         )
                     else:
+                        self.metrics.record_gs_contact(sat_id, event_time, "skip")
                         self.sim_logger.info(f"   ⏭️ SAT_{sat_id}: 미학습 & 최신 → Skip")
 
                     # FedOrbit: 마스터인 경우 plane 버퍼가 있으면 업로드 시도
@@ -807,6 +862,7 @@ class Satellite_Manager:
                     )
                     self.satellite_last_trained_version[sat_id] = -1.0
                     self.satellite_download_time[sat_id] = event_time
+                    self.metrics.record_gs_contact(sat_id, event_time, "download")
                     self.sim_logger.info(
                         f"   📥 SAT_{sat_id}: Stale → v{self.global_model_wrapper.version} 다운로드"
                     )
@@ -873,8 +929,15 @@ class Satellite_Manager:
                             delta = global_sd[key].float() - result["state_dict"][key].float()
                             new_sd[key] = (global_sd[key].float() - η_g * delta).to(global_sd[key].dtype).cpu()
                         self._update_global_and_evaluate(
-                            new_sd, nv, result["participants"], temp_model, force_eval=True
+                            new_sd, nv, result["participants"], temp_model, force_eval=True,
+                            staleness_values=[0], sim_time=self.end_time,
+                            plane_id=plane_id,
                         )
+
+        # ── 메트릭 저장 및 출력 ──
+        self.metrics.print_summary(len(self.satellites), logger=self.sim_logger)
+        saved = self.metrics.save()
+        self.sim_logger.info(f"📁 결과 저장: {saved}")
 
         self.sim_logger.info(f"\n=== 시뮬레이션 종료 [{self.strategy.upper()}] ===")
         self.sim_logger.info(f"Total Aggregation Rounds: {self.aggregation_round}")
