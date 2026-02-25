@@ -17,11 +17,14 @@ def fed_avg(models_to_average: List[OrderedDict]) -> OrderedDict:
     if not models_to_average: return OrderedDict()
     avg_state_dict = OrderedDict()
     for key in models_to_average[0].keys():
-        # 동일한 키(레이어)의 텐서들을 리스트로 모음
+        tensor_ref = models_to_average[0][key]
+        if not tensor_ref.is_floating_point():
+            # non-float (num_batches_tracked 등): 첫 번째 모델 값 사용
+            avg_state_dict[key] = tensor_ref.clone()
+            continue
         tensors = [model[key].float() for model in models_to_average]
-        # 텐서들을 쌓고(stack), 평균을 계산
         avg_tensor = torch.stack(tensors).mean(dim=0)
-        avg_state_dict[key] = avg_tensor
+        avg_state_dict[key] = avg_tensor.to(tensor_ref.dtype)
     return avg_state_dict
 
 def calculate_mixing_weight(local_ver, global_ver, local_acc, global_acc, 
@@ -56,33 +59,30 @@ def weighted_update(global_state_dict: OrderedDict, local_state_dict: OrderedDic
     수식:
         w_new = (1 - alpha) * w_global + alpha * w_local
     
-    Args:
-        global_state_dict: 현재 글로벌 모델의 가중치
-        local_state_dict: 업데이트할 로컬 모델의 가중치
-        alpha: 로컬 모델 반영 비율 (0.0 ~ 1.0). 클수록 로컬 정보를 많이 반영.
-        device: 연산을 수행할 디바이스 (예: 'cuda', 'cpu')
-        
-    Returns:
-        OrderedDict: 업데이트된 새로운 가중치 딕셔너리 (CPU 저장)
+    BatchNorm의 num_batches_tracked(int64) 등 non-float 텐서는
+    가중 평균 대상에서 제외하고 글로벌 값을 그대로 유지합니다.
+    float 파라미터도 연산 후 원본 dtype으로 복원합니다.
     """
     updated_state_dict = OrderedDict()
     
     for key in global_state_dict.keys():
-        # 연산을 위해 디바이스로 이동 및 float 형변환
-        global_param = global_state_dict[key].to(device).float()
+        global_param = global_state_dict[key]
         
-        # 로컬 모델에 해당 키가 있는지 안전장치 (보통 구조가 같으므로 생략 가능하나 안전을 위해)
+        # non-float (num_batches_tracked 등): 가중 평균하지 않음
+        if not global_param.is_floating_point():
+            updated_state_dict[key] = global_param.clone().cpu()
+            continue
+        
         if key in local_state_dict:
-            local_param = local_state_dict[key].to(device).float()
+            local_param = local_state_dict[key]
             
-            # Weighted Sum 계산
-            # (1 - alpha) * G + alpha * L
-            updated_param = (1.0 - alpha) * global_param + alpha * local_param
+            # float32로 올려서 연산 후 원본 dtype 복원
+            g = global_param.to(device).float()
+            l = local_param.to(device).float()
+            updated_param = (1.0 - alpha) * g + alpha * l
             
-            # 결과는 CPU로 내려서 저장 (메모리 절약)
-            updated_state_dict[key] = updated_param.cpu()
+            updated_state_dict[key] = updated_param.to(global_param.dtype).cpu()
         else:
-            # 키가 없으면 기존 글로벌 파라미터 유지
-            updated_state_dict[key] = global_state_dict[key].cpu()
+            updated_state_dict[key] = global_param.clone().cpu()
             
     return updated_state_dict

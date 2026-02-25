@@ -11,7 +11,7 @@
 # ============================================================
 
 # === 전략 선택 ===
-AGGREGATION_STRATEGY = "fedasync"
+AGGREGATION_STRATEGY = "fedorbit"
 
 # === Constellation ===
 NUM_PLANES = 17
@@ -48,7 +48,7 @@ IOT_FLYOVER_THRESHOLD_DEG = 30.0
 GS_FLYOVER_THRESHOLD_DEG = 10.0
 
 # === 공통: 데이터 ===
-NUM_CLIENTS = 238               # 위성 수와 동일 (이전: 50으로 modulo 재사용)
+NUM_CLIENTS = 238               # 위성 수와 동일
 DIRICHLET_ALPHA = 0.5
 BATCH_SIZE = 128
 SAMPLES_PER_CLIENT = 2000       # 위성당 학습 데이터 수 (독립 샘플링, 중복 허용)
@@ -56,3 +56,10 @@ SAMPLES_PER_CLIENT = 2000       # 위성당 학습 데이터 수 (독립 샘플�
 # === 공통: 평가/필터링 ===
 EVAL_EVERY_N_ROUNDS = 5
 STALENESS_THRESHOLD = 5.0
+
+# === 시뮬레이션 시간 ===
+# 기존 실험과 동일한 통신 스케줄 재현을 위해 시작 시간 고정
+# (원본 실행: 2026-02-18 02:05:34 UTC, Strategy: FEDASYNC)
+from datetime import datetime, timezone
+SIM_START_TIME = datetime(2026, 2, 18, 2, 5, 34, tzinfo=timezone.utc)
+SIM_DURATION_DAYS = 30

@@ -19,7 +19,10 @@ class PyTorchModel:
     def from_model(cls, model: nn.Module, version: float, trained_by: list = None):
         """현재 모델의 가중치를 CPU로 복사하여 저장"""
         # [최적화] GPU 메모리 절약을 위해 무조건 CPU로 이동시켜 저장
-        state_dict = {k: v.cpu() for k, v in model.state_dict().items()}
+        state_dict = OrderedDict({
+            k: v.detach().cpu().clone() 
+            for k, v in model.state_dict().items()
+        })
         return cls(version=version, model_state_dict=state_dict, trained_by=trained_by or [])
 
 def create_mobilenet(num_classes: int = 10, pretrained: bool = True, small_input: bool = True):

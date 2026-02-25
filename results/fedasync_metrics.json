@@ -1,0 +1,4834 @@
+{
+  "strategy": "fedasync",
+  "final_accuracy": 83.3,
+  "best_accuracy": 84.12,
+  "accuracy_history": [
+    {
+      "round": 5,
+      "sim_hours": 6.98,
+      "accuracy": 22.86,
+      "loss": 2.176526
+    },
+    {
+      "round": 10,
+      "sim_hours": 15.51,
+      "accuracy": 36.31,
+      "loss": 1.728341
+    },
+    {
+      "round": 15,
+      "sim_hours": 24.05,
+      "accuracy": 40.22,
+      "loss": 1.615727
+    },
+    {
+      "round": 20,
+      "sim_hours": 32.51,
+      "accuracy": 52.73,
+      "loss": 1.319341
+    },
+    {
+      "round": 25,
+      "sim_hours": 41.07,
+      "accuracy": 52.45,
+      "loss": 1.298327
+    },
+    {
+      "round": 30,
+      "sim_hours": 49.48,
+      "accuracy": 53.9,
+      "loss": 1.279914
+    },
+    {
+      "round": 35,
+      "sim_hours": 57.89,
+      "accuracy": 60.05,
+      "loss": 1.145849
+    },
+    {
+      "round": 40,
+      "sim_hours": 66.51,
+      "accuracy": 59.05,
+      "loss": 1.151874
+    },
+    {
+      "round": 45,
+      "sim_hours": 74.92,
+      "accuracy": 63.05,
+      "loss": 1.049089
+    },
+    {
+      "round": 50,
+      "sim_hours": 83.37,
+      "accuracy": 65.61,
+      "loss": 0.988611
+    },
+    {
+      "round": 55,
+      "sim_hours": 92.02,
+      "accuracy": 67.2,
+      "loss": 0.967865
+    },
+    {
+      "round": 60,
+      "sim_hours": 100.52,
+      "accuracy": 66.68,
+      "loss": 0.966562
+    },
+    {
+      "round": 65,
+      "sim_hours": 109.06,
+      "accuracy": 67.85,
+      "loss": 0.928334
+    },
+    {
+      "round": 70,
+      "sim_hours": 117.47,
+      "accuracy": 69.14,
+      "loss": 0.899331
+    },
+    {
+      "round": 75,
+      "sim_hours": 125.76,
+      "accuracy": 66.94,
+      "loss": 0.933529
+    },
+    {
+      "round": 80,
+      "sim_hours": 134.3,
+      "accuracy": 71.73,
+      "loss": 0.848691
+    },
+    {
+      "round": 85,
+      "sim_hours": 142.85,
+      "accuracy": 72.05,
+      "loss": 0.838281
+    },
+    {
+      "round": 90,
+      "sim_hours": 151.56,
+      "accuracy": 73.64,
+      "loss": 0.806253
+    },
+    {
+      "round": 95,
+      "sim_hours": 159.97,
+      "accuracy": 72.69,
+      "loss": 0.81978
+    },
+    {
+      "round": 100,
+      "sim_hours": 168.39,
+      "accuracy": 73.87,
+      "loss": 0.788959
+    },
+    {
+      "round": 105,
+      "sim_hours": 177.0,
+      "accuracy": 74.51,
+      "loss": 0.779754
+    },
+    {
+      "round": 110,
+      "sim_hours": 185.41,
+      "accuracy": 74.58,
+      "loss": 0.77596
+    },
+    {
+      "round": 115,
+      "sim_hours": 193.83,
+      "accuracy": 74.56,
+      "loss": 0.773556
+    },
+    {
+      "round": 120,
+      "sim_hours": 202.27,
+      "accuracy": 77.1,
+      "loss": 0.724785
+    },
+    {
+      "round": 125,
+      "sim_hours": 210.81,
+      "accuracy": 75.81,
+      "loss": 0.739092
+    },
+    {
+      "round": 130,
+      "sim_hours": 219.22,
+      "accuracy": 76.67,
+      "loss": 0.729679
+    },
+    {
+      "round": 135,
+      "sim_hours": 227.72,
+      "accuracy": 73.95,
+      "loss": 0.781578
+    },
+    {
+      "round": 140,
+      "sim_hours": 236.25,
+      "accuracy": 74.65,
+      "loss": 0.774396
+    },
+    {
+      "round": 145,
+      "sim_hours": 244.67,
+      "accuracy": 72.85,
+      "loss": 0.81562
+    },
+    {
+      "round": 150,
+      "sim_hours": 253.2,
+      "accuracy": 76.6,
+      "loss": 0.728771
+    },
+    {
+      "round": 155,
+      "sim_hours": 261.77,
+      "accuracy": 76.04,
+      "loss": 0.724227
+    },
+    {
+      "round": 160,
+      "sim_hours": 270.2,
+      "accuracy": 78.8,
+      "loss": 0.676576
+    },
+    {
+      "round": 165,
+      "sim_hours": 278.62,
+      "accuracy": 77.83,
+      "loss": 0.674933
+    },
+    {
+      "round": 170,
+      "sim_hours": 287.17,
+      "accuracy": 78.36,
+      "loss": 0.674726
+    },
+    {
+      "round": 175,
+      "sim_hours": 295.58,
+      "accuracy": 77.27,
+      "loss": 0.690717
+    },
+    {
+      "round": 180,
+      "sim_hours": 304.0,
+      "accuracy": 77.49,
+      "loss": 0.700147
+    },
+    {
+      "round": 185,
+      "sim_hours": 312.61,
+      "accuracy": 79.43,
+      "loss": 0.659561
+    },
+    {
+      "round": 190,
+      "sim_hours": 321.06,
+      "accuracy": 81.22,
+      "loss": 0.624986
+    },
+    {
+      "round": 195,
+      "sim_hours": 329.59,
+      "accuracy": 80.3,
+      "loss": 0.632883
+    },
+    {
+      "round": 200,
+      "sim_hours": 338.0,
+      "accuracy": 81.32,
+      "loss": 0.618331
+    },
+    {
+      "round": 205,
+      "sim_hours": 346.5,
+      "accuracy": 80.4,
+      "loss": 0.629602
+    },
+    {
+      "round": 210,
+      "sim_hours": 355.16,
+      "accuracy": 77.31,
+      "loss": 0.700038
+    },
+    {
+      "round": 215,
+      "sim_hours": 363.86,
+      "accuracy": 81.51,
+      "loss": 0.612507
+    },
+    {
+      "round": 220,
+      "sim_hours": 372.14,
+      "accuracy": 78.96,
+      "loss": 0.665454
+    },
+    {
+      "round": 225,
+      "sim_hours": 380.84,
+      "accuracy": 80.94,
+      "loss": 0.625938
+    },
+    {
+      "round": 230,
+      "sim_hours": 389.25,
+      "accuracy": 79.91,
+      "loss": 0.639024
+    },
+    {
+      "round": 235,
+      "sim_hours": 397.66,
+      "accuracy": 81.56,
+      "loss": 0.60994
+    },
+    {
+      "round": 240,
+      "sim_hours": 406.16,
+      "accuracy": 81.28,
+      "loss": 0.608747
+    },
+    {
+      "round": 245,
+      "sim_hours": 414.69,
+      "accuracy": 81.22,
+      "loss": 0.61752
+    },
+    {
+      "round": 250,
+      "sim_hours": 423.11,
+      "accuracy": 80.38,
+      "loss": 0.619954
+    },
+    {
+      "round": 255,
+      "sim_hours": 431.52,
+      "accuracy": 81.46,
+      "loss": 0.592355
+    },
+    {
+      "round": 260,
+      "sim_hours": 440.08,
+      "accuracy": 81.84,
+      "loss": 0.577096
+    },
+    {
+      "round": 265,
+      "sim_hours": 448.49,
+      "accuracy": 81.3,
+      "loss": 0.59825
+    },
+    {
+      "round": 270,
+      "sim_hours": 456.91,
+      "accuracy": 82.9,
+      "loss": 0.583828
+    },
+    {
+      "round": 275,
+      "sim_hours": 465.41,
+      "accuracy": 81.33,
+      "loss": 0.603059
+    },
+    {
+      "round": 280,
+      "sim_hours": 473.94,
+      "accuracy": 82.16,
+      "loss": 0.572103
+    },
+    {
+      "round": 285,
+      "sim_hours": 482.36,
+      "accuracy": 81.21,
+      "loss": 0.594753
+    },
+    {
+      "round": 290,
+      "sim_hours": 490.89,
+      "accuracy": 82.92,
+      "loss": 0.555526
+    },
+    {
+      "round": 295,
+      "sim_hours": 499.47,
+      "accuracy": 82.32,
+      "loss": 0.58599
+    },
+    {
+      "round": 300,
+      "sim_hours": 507.89,
+      "accuracy": 81.69,
+      "loss": 0.594812
+    },
+    {
+      "round": 305,
+      "sim_hours": 516.45,
+      "accuracy": 82.62,
+      "loss": 0.57985
+    },
+    {
+      "round": 310,
+      "sim_hours": 524.86,
+      "accuracy": 82.4,
+      "loss": 0.574202
+    },
+    {
+      "round": 315,
+      "sim_hours": 533.27,
+      "accuracy": 82.23,
+      "loss": 0.579492
+    },
+    {
+      "round": 320,
+      "sim_hours": 541.89,
+      "accuracy": 81.48,
+      "loss": 0.576694
+    },
+    {
+      "round": 325,
+      "sim_hours": 550.3,
+      "accuracy": 81.83,
+      "loss": 0.578204
+    },
+    {
+      "round": 330,
+      "sim_hours": 558.75,
+      "accuracy": 82.11,
+      "loss": 0.577933
+    },
+    {
+      "round": 335,
+      "sim_hours": 567.28,
+      "accuracy": 82.63,
+      "loss": 0.576801
+    },
+    {
+      "round": 340,
+      "sim_hours": 575.54,
+      "accuracy": 82.12,
+      "loss": 0.593698
+    },
+    {
+      "round": 345,
+      "sim_hours": 584.19,
+      "accuracy": 81.88,
+      "loss": 0.589127
+    },
+    {
+      "round": 350,
+      "sim_hours": 592.73,
+      "accuracy": 82.31,
+      "loss": 0.58675
+    },
+    {
+      "round": 355,
+      "sim_hours": 600.93,
+      "accuracy": 83.07,
+      "loss": 0.555813
+    },
+    {
+      "round": 360,
+      "sim_hours": 609.62,
+      "accuracy": 82.34,
+      "loss": 0.570767
+    },
+    {
+      "round": 365,
+      "sim_hours": 618.09,
+      "accuracy": 84.01,
+      "loss": 0.5389
+    },
+    {
+      "round": 370,
+      "sim_hours": 626.38,
+      "accuracy": 84.1,
+      "loss": 0.53698
+    },
+    {
+      "round": 375,
+      "sim_hours": 635.08,
+      "accuracy": 83.54,
+      "loss": 0.561228
+    },
+    {
+      "round": 380,
+      "sim_hours": 643.5,
+      "accuracy": 83.06,
+      "loss": 0.550171
+    },
+    {
+      "round": 385,
+      "sim_hours": 652.06,
+      "accuracy": 82.24,
+      "loss": 0.576331
+    },
+    {
+      "round": 390,
+      "sim_hours": 660.47,
+      "accuracy": 84.12,
+      "loss": 0.53315
+    },
+    {
+      "round": 395,
+      "sim_hours": 668.89,
+      "accuracy": 83.7,
+      "loss": 0.534327
+    },
+    {
+      "round": 400,
+      "sim_hours": 677.3,
+      "accuracy": 80.75,
+      "loss": 0.611044
+    },
+    {
+      "round": 405,
+      "sim_hours": 685.91,
+      "accuracy": 83.4,
+      "loss": 0.560769
+    },
+    {
+      "round": 410,
+      "sim_hours": 694.33,
+      "accuracy": 83.86,
+      "loss": 0.554246
+    },
+    {
+      "round": 415,
+      "sim_hours": 702.74,
+      "accuracy": 81.97,
+      "loss": 0.59232
+    },
+    {
+      "round": 420,
+      "sim_hours": 711.15,
+      "accuracy": 83.72,
+      "loss": 0.549996
+    },
+    {
+      "round": 425,
+      "sim_hours": 719.72,
+      "accuracy": 83.3,
+      "loss": 0.56131
+    }
+  ],
+  "total_aggregation_rounds": 425,
+  "total_gs_contacts": 25202,
+  "total_gsl_uploads": 425,
+  "total_gsl_downloads": 24658,
+  "target_accuracy_times": {
+    "50%": 32.51,
+    "60%": 57.89,
+    "70%": 134.3,
+    "80%": 321.06
+  },
+  "target_accuracy_not_reached": [
+    "85%",
+    "90%",
+    "93%",
+    "95%"
+  ],
+  "staleness_overall_mean": 0.0,
+  "staleness_overall_max": 0,
+  "staleness_histogram": {
+    "0": 425,
+    "1-2": 0,
+    "3-5": 0,
+    "6-10": 0,
+    "11-20": 0,
+    "21+": 0
+  },
+  "staleness_per_round": [
+    {
+      "round": 1,
+      "sim_hours": 0.26,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 2,
+      "sim_hours": 1.97,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 3,
+      "sim_hours": 3.65,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 4,
+      "sim_hours": 5.28,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 5,
+      "sim_hours": 6.98,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 6,
+      "sim_hours": 8.75,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 7,
+      "sim_hours": 10.38,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 8,
+      "sim_hours": 12.1,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 9,
+      "sim_hours": 13.79,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 10,
+      "sim_hours": 15.51,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 11,
+      "sim_hours": 17.31,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 12,
+      "sim_hours": 19.0,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 13,
+      "sim_hours": 20.63,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 14,
+      "sim_hours": 22.32,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 15,
+      "sim_hours": 24.05,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 16,
+      "sim_hours": 25.73,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 17,
+      "sim_hours": 27.41,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 18,
+      "sim_hours": 29.04,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 19,
+      "sim_hours": 30.73,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 20,
+      "sim_hours": 32.51,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 21,
+      "sim_hours": 34.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 22,
+      "sim_hours": 35.85,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 23,
+      "sim_hours": 37.54,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 24,
+      "sim_hours": 39.27,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 25,
+      "sim_hours": 41.07,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 26,
+      "sim_hours": 42.75,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 27,
+      "sim_hours": 44.39,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 28,
+      "sim_hours": 46.08,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 29,
+      "sim_hours": 47.81,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 30,
+      "sim_hours": 49.48,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 31,
+      "sim_hours": 51.17,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 32,
+      "sim_hours": 52.8,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 33,
+      "sim_hours": 54.49,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 34,
+      "sim_hours": 56.26,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 35,
+      "sim_hours": 57.89,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 36,
+      "sim_hours": 59.61,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 37,
+      "sim_hours": 61.3,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 38,
+      "sim_hours": 63.03,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 39,
+      "sim_hours": 64.83,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 40,
+      "sim_hours": 66.51,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 41,
+      "sim_hours": 68.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 42,
+      "sim_hours": 69.83,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 43,
+      "sim_hours": 71.57,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 44,
+      "sim_hours": 73.24,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 45,
+      "sim_hours": 74.92,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 46,
+      "sim_hours": 76.56,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 47,
+      "sim_hours": 78.25,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 48,
+      "sim_hours": 80.02,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 49,
+      "sim_hours": 81.65,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 50,
+      "sim_hours": 83.37,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 51,
+      "sim_hours": 85.06,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 52,
+      "sim_hours": 86.78,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 53,
+      "sim_hours": 88.7,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 54,
+      "sim_hours": 90.39,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 55,
+      "sim_hours": 92.02,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 56,
+      "sim_hours": 93.71,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 57,
+      "sim_hours": 95.45,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 58,
+      "sim_hours": 97.11,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 59,
+      "sim_hours": 98.8,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 60,
+      "sim_hours": 100.52,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 61,
+      "sim_hours": 102.28,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 62,
+      "sim_hours": 104.05,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 63,
+      "sim_hours": 105.73,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 64,
+      "sim_hours": 107.36,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 65,
+      "sim_hours": 109.06,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 66,
+      "sim_hours": 110.83,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 67,
+      "sim_hours": 112.46,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 68,
+      "sim_hours": 114.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 69,
+      "sim_hours": 115.78,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 70,
+      "sim_hours": 117.47,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 71,
+      "sim_hours": 119.09,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 72,
+      "sim_hours": 120.75,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 73,
+      "sim_hours": 122.44,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 74,
+      "sim_hours": 124.07,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 75,
+      "sim_hours": 125.76,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 76,
+      "sim_hours": 127.53,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 77,
+      "sim_hours": 129.17,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 78,
+      "sim_hours": 130.88,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 79,
+      "sim_hours": 132.57,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 80,
+      "sim_hours": 134.3,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 81,
+      "sim_hours": 136.22,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 82,
+      "sim_hours": 137.9,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 83,
+      "sim_hours": 139.53,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 84,
+      "sim_hours": 141.23,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 85,
+      "sim_hours": 142.85,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 86,
+      "sim_hours": 144.63,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 87,
+      "sim_hours": 146.31,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 88,
+      "sim_hours": 148.04,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 89,
+      "sim_hours": 149.76,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 90,
+      "sim_hours": 151.56,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 91,
+      "sim_hours": 153.24,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 92,
+      "sim_hours": 154.88,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 93,
+      "sim_hours": 156.57,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 94,
+      "sim_hours": 158.34,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 95,
+      "sim_hours": 159.97,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 96,
+      "sim_hours": 161.66,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 97,
+      "sim_hours": 163.29,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 98,
+      "sim_hours": 164.98,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 99,
+      "sim_hours": 166.61,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 100,
+      "sim_hours": 168.39,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 101,
+      "sim_hours": 170.07,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 102,
+      "sim_hours": 171.7,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 103,
+      "sim_hours": 173.4,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 104,
+      "sim_hours": 175.32,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 105,
+      "sim_hours": 177.0,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 106,
+      "sim_hours": 178.63,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 107,
+      "sim_hours": 180.33,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 108,
+      "sim_hours": 182.1,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 109,
+      "sim_hours": 183.73,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 110,
+      "sim_hours": 185.41,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 111,
+      "sim_hours": 187.05,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 112,
+      "sim_hours": 188.74,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 113,
+      "sim_hours": 190.37,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 114,
+      "sim_hours": 192.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 115,
+      "sim_hours": 193.83,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 116,
+      "sim_hours": 195.46,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 117,
+      "sim_hours": 197.15,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 118,
+      "sim_hours": 199.07,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 119,
+      "sim_hours": 200.64,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 120,
+      "sim_hours": 202.27,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 121,
+      "sim_hours": 203.96,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 122,
+      "sim_hours": 205.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 123,
+      "sim_hours": 207.49,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 124,
+      "sim_hours": 209.17,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 125,
+      "sim_hours": 210.81,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 126,
+      "sim_hours": 212.5,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 127,
+      "sim_hours": 214.13,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 128,
+      "sim_hours": 215.9,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 129,
+      "sim_hours": 217.58,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 130,
+      "sim_hours": 219.22,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 131,
+      "sim_hours": 220.91,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 132,
+      "sim_hours": 222.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 133,
+      "sim_hours": 224.31,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 134,
+      "sim_hours": 226.03,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 135,
+      "sim_hours": 227.72,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 136,
+      "sim_hours": 229.45,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 137,
+      "sim_hours": 231.24,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 138,
+      "sim_hours": 232.93,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 139,
+      "sim_hours": 234.56,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 140,
+      "sim_hours": 236.25,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 141,
+      "sim_hours": 237.9,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 142,
+      "sim_hours": 239.66,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 143,
+      "sim_hours": 241.34,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 144,
+      "sim_hours": 242.97,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 145,
+      "sim_hours": 244.67,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 146,
+      "sim_hours": 246.44,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 147,
+      "sim_hours": 248.07,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 148,
+      "sim_hours": 249.79,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 149,
+      "sim_hours": 251.47,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 150,
+      "sim_hours": 253.2,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 151,
+      "sim_hours": 255.0,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 152,
+      "sim_hours": 256.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 153,
+      "sim_hours": 258.32,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 154,
+      "sim_hours": 260.01,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 155,
+      "sim_hours": 261.77,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 156,
+      "sim_hours": 263.41,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 157,
+      "sim_hours": 265.1,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 158,
+      "sim_hours": 266.73,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 159,
+      "sim_hours": 268.43,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 160,
+      "sim_hours": 270.2,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 161,
+      "sim_hours": 271.83,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 162,
+      "sim_hours": 273.54,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 163,
+      "sim_hours": 275.16,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 164,
+      "sim_hours": 276.84,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 165,
+      "sim_hours": 278.62,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 166,
+      "sim_hours": 280.24,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 167,
+      "sim_hours": 281.93,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 168,
+      "sim_hours": 283.65,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 169,
+      "sim_hours": 285.38,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 170,
+      "sim_hours": 287.17,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 171,
+      "sim_hours": 288.86,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 172,
+      "sim_hours": 290.49,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 173,
+      "sim_hours": 292.18,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 174,
+      "sim_hours": 293.95,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 175,
+      "sim_hours": 295.58,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 176,
+      "sim_hours": 297.3,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 177,
+      "sim_hours": 298.92,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 178,
+      "sim_hours": 300.59,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 179,
+      "sim_hours": 302.37,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 180,
+      "sim_hours": 304.0,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 181,
+      "sim_hours": 305.68,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 182,
+      "sim_hours": 307.4,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 183,
+      "sim_hours": 309.13,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 184,
+      "sim_hours": 310.93,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 185,
+      "sim_hours": 312.61,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 186,
+      "sim_hours": 314.24,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 187,
+      "sim_hours": 315.94,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 188,
+      "sim_hours": 317.71,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 189,
+      "sim_hours": 319.34,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 190,
+      "sim_hours": 321.06,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 191,
+      "sim_hours": 322.75,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 192,
+      "sim_hours": 324.47,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 193,
+      "sim_hours": 326.27,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 194,
+      "sim_hours": 327.96,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 195,
+      "sim_hours": 329.59,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 196,
+      "sim_hours": 331.28,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 197,
+      "sim_hours": 333.05,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 198,
+      "sim_hours": 334.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 199,
+      "sim_hours": 336.37,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 200,
+      "sim_hours": 338.0,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 201,
+      "sim_hours": 339.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 202,
+      "sim_hours": 341.46,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 203,
+      "sim_hours": 343.1,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 204,
+      "sim_hours": 344.81,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 205,
+      "sim_hours": 346.5,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 206,
+      "sim_hours": 348.23,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 207,
+      "sim_hours": 350.15,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 208,
+      "sim_hours": 351.83,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 209,
+      "sim_hours": 353.47,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 210,
+      "sim_hours": 355.16,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 211,
+      "sim_hours": 357.08,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 212,
+      "sim_hours": 358.76,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 213,
+      "sim_hours": 360.4,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 214,
+      "sim_hours": 362.09,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 215,
+      "sim_hours": 363.86,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 216,
+      "sim_hours": 365.49,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 217,
+      "sim_hours": 367.18,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 218,
+      "sim_hours": 368.81,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 219,
+      "sim_hours": 370.44,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 220,
+      "sim_hours": 372.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 221,
+      "sim_hours": 373.91,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 222,
+      "sim_hours": 375.59,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 223,
+      "sim_hours": 377.22,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 224,
+      "sim_hours": 378.92,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 225,
+      "sim_hours": 380.84,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 226,
+      "sim_hours": 382.52,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 227,
+      "sim_hours": 384.16,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 228,
+      "sim_hours": 385.85,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 229,
+      "sim_hours": 387.62,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 230,
+      "sim_hours": 389.25,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 231,
+      "sim_hours": 390.93,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 232,
+      "sim_hours": 392.57,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 233,
+      "sim_hours": 394.26,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 234,
+      "sim_hours": 396.03,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 235,
+      "sim_hours": 397.66,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 236,
+      "sim_hours": 399.35,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 237,
+      "sim_hours": 400.98,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 238,
+      "sim_hours": 402.67,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 239,
+      "sim_hours": 404.59,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 240,
+      "sim_hours": 406.16,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 241,
+      "sim_hours": 407.76,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 242,
+      "sim_hours": 409.48,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 243,
+      "sim_hours": 411.21,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 244,
+      "sim_hours": 413.01,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 245,
+      "sim_hours": 414.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 246,
+      "sim_hours": 416.32,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 247,
+      "sim_hours": 418.02,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 248,
+      "sim_hours": 419.79,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 249,
+      "sim_hours": 421.42,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 250,
+      "sim_hours": 423.11,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 251,
+      "sim_hours": 424.74,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 252,
+      "sim_hours": 426.43,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 253,
+      "sim_hours": 428.21,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 254,
+      "sim_hours": 429.83,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 255,
+      "sim_hours": 431.52,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 256,
+      "sim_hours": 433.15,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 257,
+      "sim_hours": 434.84,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 258,
+      "sim_hours": 436.76,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 259,
+      "sim_hours": 438.45,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 260,
+      "sim_hours": 440.08,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 261,
+      "sim_hours": 441.77,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 262,
+      "sim_hours": 443.54,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 263,
+      "sim_hours": 445.18,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 264,
+      "sim_hours": 446.86,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 265,
+      "sim_hours": 448.49,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 266,
+      "sim_hours": 450.19,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 267,
+      "sim_hours": 451.96,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 268,
+      "sim_hours": 453.59,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 269,
+      "sim_hours": 455.27,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 270,
+      "sim_hours": 456.91,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 271,
+      "sim_hours": 458.6,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 272,
+      "sim_hours": 460.52,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 273,
+      "sim_hours": 462.09,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 274,
+      "sim_hours": 463.72,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 275,
+      "sim_hours": 465.41,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 276,
+      "sim_hours": 467.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 277,
+      "sim_hours": 468.93,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 278,
+      "sim_hours": 470.62,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 279,
+      "sim_hours": 472.25,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 280,
+      "sim_hours": 473.94,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 281,
+      "sim_hours": 475.72,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 282,
+      "sim_hours": 477.35,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 283,
+      "sim_hours": 479.03,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 284,
+      "sim_hours": 480.66,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 285,
+      "sim_hours": 482.36,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 286,
+      "sim_hours": 484.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 287,
+      "sim_hours": 485.76,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 288,
+      "sim_hours": 487.48,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 289,
+      "sim_hours": 489.17,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 290,
+      "sim_hours": 490.89,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 291,
+      "sim_hours": 492.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 292,
+      "sim_hours": 494.38,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 293,
+      "sim_hours": 496.01,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 294,
+      "sim_hours": 497.7,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 295,
+      "sim_hours": 499.47,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 296,
+      "sim_hours": 501.11,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 297,
+      "sim_hours": 502.79,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 298,
+      "sim_hours": 504.42,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 299,
+      "sim_hours": 506.11,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 300,
+      "sim_hours": 507.89,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 301,
+      "sim_hours": 509.52,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 302,
+      "sim_hours": 511.23,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 303,
+      "sim_hours": 512.92,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 304,
+      "sim_hours": 514.65,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 305,
+      "sim_hours": 516.45,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 306,
+      "sim_hours": 518.13,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 307,
+      "sim_hours": 519.77,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 308,
+      "sim_hours": 521.46,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 309,
+      "sim_hours": 523.23,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 310,
+      "sim_hours": 524.86,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 311,
+      "sim_hours": 526.54,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 312,
+      "sim_hours": 528.18,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 313,
+      "sim_hours": 529.87,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 314,
+      "sim_hours": 531.64,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 315,
+      "sim_hours": 533.27,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 316,
+      "sim_hours": 534.99,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 317,
+      "sim_hours": 536.68,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 318,
+      "sim_hours": 538.41,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 319,
+      "sim_hours": 540.21,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 320,
+      "sim_hours": 541.89,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 321,
+      "sim_hours": 543.52,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 322,
+      "sim_hours": 545.21,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 323,
+      "sim_hours": 546.98,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 324,
+      "sim_hours": 548.62,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 325,
+      "sim_hours": 550.3,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 326,
+      "sim_hours": 551.94,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 327,
+      "sim_hours": 553.63,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 328,
+      "sim_hours": 555.4,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 329,
+      "sim_hours": 557.03,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 330,
+      "sim_hours": 558.75,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 331,
+      "sim_hours": 560.44,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 332,
+      "sim_hours": 562.16,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 333,
+      "sim_hours": 563.96,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 334,
+      "sim_hours": 565.65,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 335,
+      "sim_hours": 567.28,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 336,
+      "sim_hours": 568.97,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 337,
+      "sim_hours": 570.74,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 338,
+      "sim_hours": 572.38,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 339,
+      "sim_hours": 573.94,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 340,
+      "sim_hours": 575.54,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 341,
+      "sim_hours": 577.26,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 342,
+      "sim_hours": 578.99,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 343,
+      "sim_hours": 580.79,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 344,
+      "sim_hours": 582.51,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 345,
+      "sim_hours": 584.19,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 346,
+      "sim_hours": 585.92,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 347,
+      "sim_hours": 587.72,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 348,
+      "sim_hours": 589.4,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 349,
+      "sim_hours": 591.04,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 350,
+      "sim_hours": 592.73,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 351,
+      "sim_hours": 594.49,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 352,
+      "sim_hours": 596.13,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 353,
+      "sim_hours": 597.7,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 354,
+      "sim_hours": 599.3,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 355,
+      "sim_hours": 600.93,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 356,
+      "sim_hours": 602.62,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 357,
+      "sim_hours": 604.54,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 358,
+      "sim_hours": 606.26,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 359,
+      "sim_hours": 607.95,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 360,
+      "sim_hours": 609.62,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 361,
+      "sim_hours": 611.33,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 362,
+      "sim_hours": 612.96,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 363,
+      "sim_hours": 614.64,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 364,
+      "sim_hours": 616.36,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 365,
+      "sim_hours": 618.09,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 366,
+      "sim_hours": 619.74,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 367,
+      "sim_hours": 621.37,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 368,
+      "sim_hours": 623.06,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 369,
+      "sim_hours": 624.69,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 370,
+      "sim_hours": 626.38,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 371,
+      "sim_hours": 628.3,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 372,
+      "sim_hours": 630.02,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 373,
+      "sim_hours": 631.71,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 374,
+      "sim_hours": 633.38,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 375,
+      "sim_hours": 635.08,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 376,
+      "sim_hours": 636.72,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 377,
+      "sim_hours": 638.4,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 378,
+      "sim_hours": 640.12,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 379,
+      "sim_hours": 641.85,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 380,
+      "sim_hours": 643.5,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 381,
+      "sim_hours": 645.13,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 382,
+      "sim_hours": 646.81,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 383,
+      "sim_hours": 648.44,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 384,
+      "sim_hours": 650.14,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 385,
+      "sim_hours": 652.06,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 386,
+      "sim_hours": 653.77,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 387,
+      "sim_hours": 655.46,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 388,
+      "sim_hours": 657.13,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 389,
+      "sim_hours": 658.84,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 390,
+      "sim_hours": 660.47,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 391,
+      "sim_hours": 662.16,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 392,
+      "sim_hours": 663.88,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 393,
+      "sim_hours": 665.61,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 394,
+      "sim_hours": 667.26,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 395,
+      "sim_hours": 668.89,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 396,
+      "sim_hours": 670.57,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 397,
+      "sim_hours": 672.2,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 398,
+      "sim_hours": 673.89,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 399,
+      "sim_hours": 675.67,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 400,
+      "sim_hours": 677.3,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 401,
+      "sim_hours": 678.98,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 402,
+      "sim_hours": 680.61,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 403,
+      "sim_hours": 682.31,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 404,
+      "sim_hours": 684.23,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 405,
+      "sim_hours": 685.91,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 406,
+      "sim_hours": 687.63,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 407,
+      "sim_hours": 689.36,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 408,
+      "sim_hours": 691.02,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 409,
+      "sim_hours": 692.64,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 410,
+      "sim_hours": 694.33,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 411,
+      "sim_hours": 695.96,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 412,
+      "sim_hours": 697.65,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 413,
+      "sim_hours": 699.43,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 414,
+      "sim_hours": 701.06,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 415,
+      "sim_hours": 702.74,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 416,
+      "sim_hours": 704.37,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 417,
+      "sim_hours": 706.07,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 418,
+      "sim_hours": 707.99,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 419,
+      "sim_hours": 709.55,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 420,
+      "sim_hours": 711.15,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 421,
+      "sim_hours": 712.88,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 422,
+      "sim_hours": 714.6,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 423,
+      "sim_hours": 716.4,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 424,
+      "sim_hours": 718.08,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    {
+      "round": 425,
+      "sim_hours": 719.72,
+      "values": [
+        0
+      ],
+      "mean": 0.0,
+      "max": 0,
+      "min": 0
+    }
+  ],
+  "total_satellites": 238,
+  "participating_satellites": 209,
+  "participation_rate": 87.8,
+  "per_plane_contributions": {
+    "0": 175,
+    "1": 190,
+    "2": 60
+  },
+  "top10_contributing_sats": {
+    "108": 5,
+    "70": 5,
+    "20": 5,
+    "229": 5,
+    "74": 5,
+    "14": 5,
+    "82": 4,
+    "18": 4,
+    "200": 4,
+    "227": 4
+  },
+  "bottom10_contributing_sats": {
+    "193": 1,
+    "37": 1,
+    "168": 1,
+    "87": 1,
+    "180": 1,
+    "209": 1,
+    "170": 1,
+    "199": 1,
+    "42": 1,
+    "163": 1
+  },
+  "satellites_never_contributed": 29,
+  "idle_time_mean_sec": 2206.0,
+  "idle_time_median_sec": 1070.0,
+  "idle_time_max_sec": 4810.0,
+  "idle_time_mean_hours": 0.61,
+  "avg_updates_per_gsl": 1.0,
+  "max_updates_per_gsl": 1
+}

@@ -135,7 +135,7 @@ class MetricsCollector:
             self.plane_contributions[plane_id] += 1
         else:
             for sid in participating_ids:
-                pid = sid // 100  # get_plane_id
+                pid = sid // self.sats_per_plane
                 self.plane_contributions[pid] += 1
 
         # 5. Idle time
