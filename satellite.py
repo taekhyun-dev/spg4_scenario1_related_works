@@ -20,6 +20,7 @@ import asyncio
 import torch
 import numpy as np
 import math
+import random
 from datetime import datetime, timedelta, timezone
 from utils.skyfield_utils import EarthSatellite
 from utils.logging_setup import setup_loggers, KST
@@ -53,6 +54,7 @@ from ml.training import train_model
 from ml.aggregation import weighted_update
 from ml.metrics import MetricsCollector
 
+SEED = 42
 
 class Satellite_Manager:
     """
@@ -755,9 +757,17 @@ class Satellite_Manager:
 
                 loader_idx = sat_id % len(self.client_subsets)
                 dataset = self.client_subsets[loader_idx]
+
+                def seed_worker(worker_id):
+                    worker_seed = torch.initial_seed() % 2**32
+                    np.random.seed(worker_seed)
+                    random.seed(worker_seed)
+
                 train_loader = DataLoader(
                     dataset, batch_size=BATCH_SIZE, shuffle=True,
-                    num_workers=8, pin_memory=True, persistent_workers=False
+                    num_workers=8, pin_memory=True,
+                    worker_init_fn=seed_worker,
+                    generator=torch.Generator().manual_seed(SEED)
                 )
 
                 # 학습 전 base state 저장 (pseudo-gradient 계산용)
@@ -930,6 +940,13 @@ def parse_tle_epoch(tle_path: str = "constellation.tle") -> datetime:
 
 def main():
     try:
+        random.seed(SEED)
+        np.random.seed(SEED)
+        torch.manual_seed(SEED)
+        torch.cuda.manual_seed_all(SEED)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
         # 시뮬레이션 시작 시간 결정
         if SIM_START_TIME is not None:
             start_time = SIM_START_TIME

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel (b)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      font-family: 'Source Sans 3', 'Noto Sans KR', sans-serif;
+    }
+    .panel {
+      background: #fff;
+      border-radius: 4px;
+      padding: 24px 28px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      width: 600px; /* 필요하면 조절 */
+    }
+    .panel svg { width: 100%; height: auto; display: block; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <!-- Panel (b): On-board AI Solution -->
+    <svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0a1628"/>
+          <stop offset="55%" stop-color="#1a3355"/>
+          <stop offset="100%" stop-color="#2a5580"/>
+        </linearGradient>
+        <linearGradient id="earth2" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2e8b57"/>
+          <stop offset="30%" stop-color="#3aa06a"/>
+          <stop offset="60%" stop-color="#2277bb"/>
+          <stop offset="100%" stop-color="#1a5599"/>
+        </linearGradient>
+        <linearGradient id="aiGlow" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#44ffaa"/>
+          <stop offset="100%" stop-color="#22cc88"/>
+        </linearGradient>
+        <filter id="glow2">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- Background -->
+      <rect width="560" height="420" fill="url(#sky2)" rx="10"/>
+
+      <!-- Stars -->
+      <circle cx="50" cy="30" r="1.2" fill="#fff" opacity="0.7"/>
+      <circle cx="130" cy="55" r="0.8" fill="#fff" opacity="0.5"/>
+      <circle cx="220" cy="20" r="1" fill="#fff" opacity="0.6"/>
+      <circle cx="350" cy="40" r="1.3" fill="#fff" opacity="0.7"/>
+      <circle cx="430" cy="25" r="0.9" fill="#fff" opacity="0.5"/>
+      <circle cx="500" cy="50" r="1.1" fill="#fff" opacity="0.6"/>
+
+      <!-- Earth -->
+      <ellipse cx="280" cy="520" rx="320" ry="200" fill="url(#earth2)" opacity="0.9"/>
+      <ellipse cx="280" cy="520" rx="320" ry="200" fill="none" stroke="#4ac" stroke-width="1.5" opacity="0.3"/>
+      <ellipse cx="280" cy="518" rx="325" ry="203" fill="none" stroke="#66ccff" stroke-width="2" opacity="0.15"/>
+
+      <!-- Title bar -->
+      <rect x="0" y="0" width="560" height="38" fill="rgba(0,0,0,0.5)" rx="10" ry="10"/>
+      <rect x="0" y="15" width="560" height="23" fill="rgba(0,0,0,0.5)"/>
+      <text x="280" y="26" text-anchor="middle" font-size="14.5" font-weight="700" fill="#fff"
+            font-family="Source Sans 3, Noto Sans KR, sans-serif">(b) 온보드 AI: 궤도에서 처리 후 결과만 전송</text>
+
+      <!-- Satellites with AI chip glow -->
+      <g transform="translate(90, 110)">
+        <rect x="-18" y="-3" width="36" height="6" rx="1" fill="#88aacc" stroke="#aaccee" stroke-width="0.5"/>
+        <rect x="-5" y="-7" width="10" height="14" rx="2" fill="#556677" stroke="#8899aa" stroke-width="0.5"/>
+        <circle cx="0" cy="0" r="8" fill="none" stroke="#44ffaa" stroke-width="1.5" opacity="0.6" filter="url(#glow2)"/>
+        <text x="0" y="3" text-anchor="middle" font-size="6" font-weight="700" fill="#44ffaa"
+              font-family="Source Sans 3, sans-serif">AI</text>
+      </g>
+
+      <g transform="translate(210, 80)">
+        <rect x="-18" y="-3" width="36" height="6" rx="1" fill="#88aacc" stroke="#aaccee" stroke-width="0.5"/>
+        <rect x="-5" y="-7" width="10" height="14" rx="2" fill="#556677" stroke="#8899aa" stroke-width="0.5"/>
+        <circle cx="0" cy="0" r="8" fill="none" stroke="#44ffaa" stroke-width="1.5" opacity="0.6" filter="url(#glow2)"/>
+        <text x="0" y="3" text-anchor="middle" font-size="6" font-weight="700" fill="#44ffaa"
+              font-family="Source Sans 3, sans-serif">AI</text>
+      </g>
+
+      <g transform="translate(330, 75)">
+        <rect x="-18" y="-3" width="36" height="6" rx="1" fill="#88aacc" stroke="#aaccee" stroke-width="0.5"/>
+        <rect x="-5" y="-7" width="10" height="14" rx="2" fill="#556677" stroke="#8899aa" stroke-width="0.5"/>
+        <circle cx="0" cy="0" r="8" fill="none" stroke="#44ffaa" stroke-width="1.5" opacity="0.6" filter="url(#glow2)"/>
+        <text x="0" y="3" text-anchor="middle" font-size="6" font-weight="700" fill="#44ffaa"
+              font-family="Source Sans 3, sans-serif">AI</text>
+      </g>
+
+      <g transform="translate(450, 100)">
+        <rect x="-18" y="-3" width="36" height="6" rx="1" fill="#88aacc" stroke="#aaccee" stroke-width="0.5"/>
+        <rect x="-5" y="-7" width="10" height="14" rx="2" fill="#556677" stroke="#8899aa" stroke-width="0.5"/>
+        <circle cx="0" cy="0" r="8" fill="none" stroke="#44ffaa" stroke-width="1.5" opacity="0.6" filter="url(#glow2)"/>
+        <text x="0" y="3" text-anchor="middle" font-size="6" font-weight="700" fill="#44ffaa"
+              font-family="Source Sans 3, sans-serif">AI</text>
+      </g>
+
+      <!-- Inter-satellite links (solid, active) -->
+      <line x1="112" y1="110" x2="192" y2="80" stroke="#44ffaa" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.6"/>
+      <line x1="228" y1="80" x2="312" y2="75" stroke="#44ffaa" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.6"/>
+      <line x1="348" y1="75" x2="432" y2="100" stroke="#44ffaa" stroke-width="1.5" stroke-dasharray="6,3" opacity="0.6"/>
+
+      <!-- Processing zone (on-board) -->
+      <g opacity="0.35">
+        <rect x="55" y="55" width="435" height="80" rx="40" fill="none" stroke="#44ffaa" stroke-width="1.5" stroke-dasharray="8,4"/>
+      </g>
+      <text x="505" y="68" font-size="10" font-weight="600" fill="#44ffaa" opacity="0.7"
+            font-family="Source Sans 3, sans-serif">On-board</text>
+      <text x="505" y="80" font-size="10" font-weight="600" fill="#44ffaa" opacity="0.7"
+            font-family="Source Sans 3, sans-serif">Processing</text>
+
+      <!-- Processing icons under satellites -->
+      <g transform="translate(90, 155)">
+        <rect x="-22" y="-10" width="44" height="20" rx="4" fill="rgba(68,255,170,0.15)" stroke="#44ffaa" stroke-width="1" opacity="0.8"/>
+        <text x="-14" y="-1" font-size="7" fill="#88ddaa" font-family="monospace">RAW</text>
+        <text x="4" y="4" font-size="10" fill="#44ffaa">→</text>
+        <text x="12" y="-1" font-size="7" fill="#44ffaa" font-weight="700" font-family="monospace">✓</text>
+      </g>
+
+      <g transform="translate(210, 125)">
+        <rect x="-22" y="-10" width="44" height="20" rx="4" fill="rgba(68,255,170,0.15)" stroke="#44ffaa" stroke-width="1" opacity="0.8"/>
+        <text x="-14" y="-1" font-size="7" fill="#88ddaa" font-family="monospace">RAW</text>
+        <text x="4" y="4" font-size="10" fill="#44ffaa">→</text>
+        <text x="12" y="-1" font-size="7" fill="#44ffaa" font-weight="700" font-family="monospace">✓</text>
+      </g>
+
+      <g transform="translate(330, 120)">
+        <rect x="-22" y="-10" width="44" height="20" rx="4" fill="rgba(68,255,170,0.15)" stroke="#44ffaa" stroke-width="1" opacity="0.8"/>
+        <text x="-14" y="-1" font-size="7" fill="#88ddaa" font-family="monospace">RAW</text>
+        <text x="4" y="4" font-size="10" fill="#44ffaa">→</text>
+        <text x="12" y="-1" font-size="7" fill="#44ffaa" font-weight="700" font-family="monospace">✓</text>
+      </g>
+
+      <g transform="translate(450, 140)">
+        <rect x="-22" y="-10" width="44" height="20" rx="4" fill="rgba(68,255,170,0.15)" stroke="#44ffaa" stroke-width="1" opacity="0.8"/>
+        <text x="-14" y="-1" font-size="7" fill="#88ddaa" font-family="monospace">RAW</text>
+        <text x="4" y="4" font-size="10" fill="#44ffaa">→</text>
+        <text x="12" y="-1" font-size="7" fill="#44ffaa" font-weight="700" font-family="monospace">✓</text>
+      </g>
+
+      <!-- Thin, efficient data streams (only processed results) -->
+      <g opacity="0.8">
+        <line x1="90" y1="170" x2="230" y2="310" stroke="#44ffaa" stroke-width="1.8"/>
+        <line x1="210" y1="140" x2="250" y2="310" stroke="#44ffaa" stroke-width="1.8"/>
+        <line x1="330" y1="135" x2="290" y2="310" stroke="#44ffaa" stroke-width="1.8"/>
+        <line x1="450" y1="155" x2="310" y2="310" stroke="#44ffaa" stroke-width="1.8"/>
+      </g>
+
+      <!-- Small result labels on streams -->
+      <g font-family="Source Sans 3, sans-serif" font-size="9" fill="#88ffcc" font-weight="600">
+        <text x="148" y="235" transform="rotate(-30, 148, 235)">Result</text>
+        <text x="228" y="215" transform="rotate(-75, 228, 215)">Result</text>
+        <text x="315" y="215" transform="rotate(70, 315, 215)">Result</text>
+        <text x="395" y="225" transform="rotate(40, 395, 225)">Result</text>
+      </g>
+
+      <!-- Ground station -->
+      <g transform="translate(270, 325)">
+        <rect x="-4" y="10" width="8" height="20" fill="#889" rx="1"/>
+        <rect x="-12" y="28" width="24" height="5" fill="#778" rx="2"/>
+        <ellipse cx="0" cy="0" rx="22" ry="14" fill="#99aabb" stroke="#bbccdd" stroke-width="1"/>
+        <ellipse cx="0" cy="2" rx="16" ry="9" fill="#aabbcc" opacity="0.5"/>
+        <circle cx="0" cy="4" r="3" fill="#667788"/>
+      </g>
+
+      <!-- Check mark -->
+      <g transform="translate(460, 280)" filter="url(#glow2)">
+        <circle cx="0" cy="0" r="20" fill="rgba(68,255,170,0.2)" stroke="#44ffaa" stroke-width="2"/>
+        <polyline points="-8,0 -3,6 10,-7" fill="none" stroke="#44ffaa" stroke-width="3.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+
+      <!-- Benefit labels -->
+      <g font-family="Source Sans 3, Noto Sans KR, sans-serif">
+        <rect x="55" y="365" width="450" height="45" rx="6" fill="rgba(0,0,0,0.5)"/>
+        <text x="280" y="383" text-anchor="middle" font-size="12" font-weight="700" fill="#88ffcc">▪ 궤도에서 AI 추론 → 처리된 결과만 전송 (전송량 대폭 감소)</text>
+        <text x="280" y="400" text-anchor="middle" font-size="12" font-weight="700" fill="#88ffcc">▪ 실시간 판단 · 지상국 의존 탈피 · 위성 간 분산 컴퓨팅</text>
+      </g>
+
+      <!-- Efficiency label -->
+      <g transform="translate(115, 280)">
+        <rect x="-40" y="-10" width="80" height="20" rx="10" fill="rgba(68,255,170,0.8)"/>
+        <text x="0" y="4" text-anchor="middle" font-size="11" font-weight="700" fill="#0a3020"
+              font-family="Source Sans 3, sans-serif">~10× Efficient</text>
+      </g>
+
+      <!-- Sun energy (top right) -->
+      <g transform="translate(530, 65)">
+        <circle cx="0" cy="0" r="18" fill="#ffdd44" opacity="0.3"/>
+        <circle cx="0" cy="0" r="12" fill="#ffdd44" opacity="0.5"/>
+        <circle cx="0" cy="0" r="7" fill="#ffee88"/>
+        <line x1="0" y1="-22" x2="0" y2="-28" stroke="#ffdd44" stroke-width="1.5" opacity="0.5"/>
+        <line x1="15" y1="-15" x2="20" y2="-20" stroke="#ffdd44" stroke-width="1.5" opacity="0.5"/>
+        <line x1="22" y1="0" x2="28" y2="0" stroke="#ffdd44" stroke-width="1.5" opacity="0.5"/>
+        <line x1="15" y1="15" x2="20" y2="20" stroke="#ffdd44" stroke-width="1.5" opacity="0.5"/>
+        <line x1="-15" y1="-15" x2="-20" y2="-20" stroke="#ffdd44" stroke-width="1.5" opacity="0.5"/>
+      </g>
+      <text x="530" y="100" text-anchor="middle" font-size="8" fill="#ffdd88" opacity="0.7"
+            font-family="Source Sans 3, sans-serif">Solar Power</text>
+      <text x="530" y="110" text-anchor="middle" font-size="8" fill="#ffdd88" opacity="0.7"
+            font-family="Source Sans 3, sans-serif">×8 vs Ground</text>
+    </svg>
+  </div>
+</body>
+</html>

@@ -11,7 +11,7 @@
 # ============================================================
 
 # === 전략 선택 ===
-AGGREGATION_STRATEGY = "fedorbit"
+AGGREGATION_STRATEGY = "fedspace"
 
 # === Constellation ===
 NUM_PLANES = 17
@@ -62,4 +62,4 @@ STALENESS_THRESHOLD = 5.0
 # (원본 실행: 2026-02-18 02:05:34 UTC, Strategy: FEDASYNC)
 from datetime import datetime, timezone
 SIM_START_TIME = datetime(2026, 2, 18, 2, 5, 34, tzinfo=timezone.utc)
-SIM_DURATION_DAYS = 30
+SIM_DURATION_DAYS = 14
