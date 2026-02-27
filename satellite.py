@@ -592,16 +592,33 @@ class Satellite_Manager:
                 )
 
     def _fedorbit_intra_plane_collect(self, sat_id, local_wrapper, event_time):
-        """Intra-Plane ISL 버퍼에 수집 (ISL 교환 모사)"""
+        """
+        Intra-Plane ISL 버퍼에 수집.
+        [수정] 위성당 최신 모델만 유지 — 중복 축적 방지.
+        같은 위성이 여러 번 학습하면 이전 엔트리를 교체합니다.
+        논문 원본: 라운드당 위성별 1개 모델만 집계 참여.
+        """
         plane_id = self.get_plane_id(sat_id)
         loader_idx = sat_id % len(self.client_subsets)
 
-        self.plane_buffers[plane_id].append({
+        new_entry = {
             "sat_id": sat_id,
             "state_dict": local_wrapper.model_state_dict,
             "version": local_wrapper.version,
             "data_count": len(self.client_subsets[loader_idx]),
-        })
+        }
+
+        # 기존 엔트리 교체 (같은 위성 ID가 있으면 최신으로 덮어쓰기)
+        buf = self.plane_buffers[plane_id]
+        replaced = False
+        for idx, entry in enumerate(buf):
+            if entry["sat_id"] == sat_id:
+                buf[idx] = new_entry
+                replaced = True
+                break
+
+        if not replaced:
+            buf.append(new_entry)
 
     def _fedorbit_try_intra_aggregate(self, plane_id, event_time, temp_model):
         """Plane 내 ISL 집계: 주기적으로 plane 내 모델들을 FedAvg"""
@@ -685,7 +702,7 @@ class Satellite_Manager:
 
         self._update_global_and_evaluate(
             new_sd, new_version, result["participants"], temp_model,
-            staleness_values=result["staleness_values"], sim_time=event_time,
+            staleness_values=result.get("staleness_values", [0]), sim_time=event_time,
             plane_id=plane_id,
         )
 
