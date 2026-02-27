@@ -26,6 +26,21 @@ checkpoints/
 logs/
 *.log
 
+# Results & Outputs
+results/
+outputs/
+*.json
+*.txt
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.svg
+*.webp
+
 # IDE
 .vscode/
 .idea/
