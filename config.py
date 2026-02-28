@@ -26,7 +26,9 @@ FEDASYNC_STALENESS_FUNC = "poly"  # "poly" | "hinge" | "const"
 # === FedBuff (Nguyen et al., 2022) ===
 FEDBUFF_K = 10                 # 버퍼 크기 (논문 K=10 최적)
 FEDBUFF_SERVER_LR = 1.0        # 서버 학습률 η_g
-FEDBUFF_SERVER_MOMENTUM = 0.9  # 서버 모멘텀 β
+FEDBUFF_SERVER_MOMENTUM = 0.0  # 서버 모멘텀 β
+# β=0.0: 순수 pseudo-gradient averaging (η_g=1.0 → FedAvg 등가)
+# β=0.9: 서버 모멘텀 활성화 시 η_g=0.1 권장 (실효 스텝 ≈ η_g/(1-β) = 1.0)
 
 # === FedSpace (So et al., 2022) ===
 FEDSPACE_PREDICT_WINDOW_SEC = 600

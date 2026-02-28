@@ -418,9 +418,11 @@ class Satellite_Manager:
     # ================================================================
 
     def _fedbuff_collect(self, sat_id, local_wrapper, event_time):
-        """버퍼에 pseudo-gradient용 데이터 수집"""
+        """버퍼에 pseudo-gradient용 데이터 수집.
+        논문(Nguyen et al., 2022): staleness weighting 없이 단순 버퍼링.
+        τ는 메트릭 기록용으로만 계산."""
         tau_ver, _ = self._compute_staleness(local_wrapper, event_time)
-        s_tau = self._staleness_function(tau_ver)
+        # s_tau = self._staleness_function(tau_ver)
         loader_idx = sat_id % len(self.client_subsets)
 
         self.gs_buffer.append({
@@ -429,7 +431,7 @@ class Satellite_Manager:
             "base_state_dict": self.satellite_base_state.get(sat_id, {}),
             "base_version": int(local_wrapper.version),
             "staleness": tau_ver,
-            "s_tau": s_tau,
+            "s_tau": tau_ver,
             "data_count": len(self.client_subsets[loader_idx]),
             "event_time": event_time,
         })
@@ -439,7 +441,16 @@ class Satellite_Manager:
         )
 
     def _fedbuff_flush(self, temp_model, force_eval=False):
-        """K개 모였을 때 pseudo-gradient averaging으로 집계"""
+        """논문(Nguyen et al., 2022) Algorithm 1 구현.
+
+        Server-side:
+          1. Δ_avg = (1/K) Σ Δ_i,  Δ_i = base_i - trained_i
+          2. m_t = β·m_{t-1} + Δ_avg          (서버 모멘텀, β=0이면 비활성)
+          3. x_{t+1} = x_t - η_g · m_t
+        
+        주의: staleness weighting s(τ)는 FedAsync 논문(Xie et al.)의 것.
+        FedBuff는 버퍼 K를 통해 staleness를 암묵적으로 제어하므로 s(τ) 미사용.
+        """
         if len(self.gs_buffer) == 0:
             return
 
@@ -454,8 +465,9 @@ class Satellite_Manager:
 
         global_sd = self.global_model_wrapper.model_state_dict
 
-        # pseudo-gradient: Δ_i = w_base - w_trained
-        # 논문: Δ_avg = (1/K) * Σ s(τ_i) * Δ_i
+        # ── Step 1: pseudo-gradient 평균 ──
+        # Δ_avg = (1/K) Σ (base_i - trained_i)
+        # s(τ) 미적용 — 논문 원본대로 단순 평균
         delta_avg = OrderedDict()
         for key in global_sd.keys():
             if not self._is_gradient_param(key, global_sd[key]):
@@ -463,33 +475,42 @@ class Satellite_Manager:
                 continue
             delta = torch.zeros_like(global_sd[key], dtype=torch.float32)
             for m in self.gs_buffer:
-                pseudo_grad = m["base_state_dict"][key].float() - m["state_dict"][key].float()
-                delta += (1.0 / K) * m["s_tau"] * pseudo_grad
-            delta_avg[key] = delta
+                base = m["base_state_dict"][key].float()
+                trained = m["state_dict"][key].float()
+                delta += (base - trained)
+            delta_avg[key] = delta / K
 
-        # 서버 모멘텀: m_t = β·m_{t-1} + Δ_avg
+        # ── Step 2: 서버 모멘텀 (선택적) ──
+        # m_t = β·m_{t-1} + Δ_avg
+        # β=0이면 m_t = Δ_avg (모멘텀 비활성 → 순수 pseudo-gradient averaging)
         beta = FEDBUFF_SERVER_MOMENTUM
-        if self.server_momentum_state is None:
-            self.server_momentum_state = OrderedDict()
-            for key in delta_avg:
-                if delta_avg[key] is not None:
-                    self.server_momentum_state[key] = delta_avg[key].clone()
+        if beta > 0:
+            if self.server_momentum_state is None:
+                self.server_momentum_state = OrderedDict()
+                for key in delta_avg:
+                    if delta_avg[key] is not None:
+                        self.server_momentum_state[key] = delta_avg[key].clone()
+            else:
+                for key in delta_avg:
+                    if delta_avg[key] is not None and key in self.server_momentum_state:
+                        self.server_momentum_state[key] = (
+                            beta * self.server_momentum_state[key] + delta_avg[key]
+                        )
+            update_source = self.server_momentum_state
         else:
-            for key in delta_avg:
-                if delta_avg[key] is not None and key in self.server_momentum_state:
-                    self.server_momentum_state[key] = (
-                        beta * self.server_momentum_state[key] + delta_avg[key]
-                    )
+            # β=0: 모멘텀 없이 Δ_avg 직접 사용
+            update_source = {k: v for k, v in delta_avg.items() if v is not None}
 
-        # w_{t+1} = w_t - η_g · m_t
+        # ── Step 3: 글로벌 모델 업데이트 ──
+        # x_{t+1} = x_t - η_g · m_t (또는 η_g · Δ_avg)
         eta_g = FEDBUFF_SERVER_LR
         new_sd = OrderedDict()
         for key in global_sd.keys():
             if not self._is_gradient_param(key, global_sd[key]):
                 new_sd[key] = global_sd[key].clone()
-            elif key in self.server_momentum_state:
+            elif key in update_source:
                 new_sd[key] = (
-                    global_sd[key].float() - eta_g * self.server_momentum_state[key]
+                    global_sd[key].float() - eta_g * update_source[key]
                 ).to(global_sd[key].dtype).cpu()
             else:
                 new_sd[key] = global_sd[key].clone()
