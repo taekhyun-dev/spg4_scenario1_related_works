@@ -77,9 +77,6 @@ class Satellite_Manager:
         # 위성별 글로벌 모델 다운로드 시점 기록 (시간 기반 staleness용)
         self.satellite_download_time: Dict[int, datetime] = {}
 
-        # 학습 시작 전 base state 저장 (pseudo-gradient 정확 계산용)
-        self.satellite_base_state: Dict[int, OrderedDict] = {}
-
         self.check_arr = defaultdict(list)
 
         # --- FL 설정 ---
@@ -408,30 +405,31 @@ class Satellite_Manager:
         self.satellite_download_time[sat_id] = event_time
 
     # ================================================================
-    # Strategy 2: FedBuff (Nguyen et al., 2022)
+    # Strategy 2: FedBuff (Nguyen et al., 2022) — Satellite-Adapted
     #
-    # 논문 원본 pseudo-gradient averaging:
-    #   Client: Δ_i = w_before - w_after (pseudo-gradient)
-    #   Server: K개 모이면 Δ_avg = (1/K) Σ s(τ_i)·Δ_i
-    #           w_{t+1} = w_t - η_g · Δ_avg
-    #   서버 모멘텀: m_t = β·m_{t-1} + Δ_avg, w_{t+1} = w_t - η_g·m_t
+    # 원본: pseudo-gradient SGD (η_ℓ=0.0002, η_g=40.9, datacenter)
+    # 적응: staleness-weighted buffered averaging (위성 고지연 환경)
+    #
+    #   Δ_avg = Σ (s_i/Σs) × (global_current - trained_i)
+    #   m_t = β·m_{t-1} + Δ_avg          (서버 모멘텀)
+    #   x_{t+1} = x_t - η_g · m_t
+    #
+    # η_g=1.0에서 (β=0 가정): new = Σ (s_i/Σs) × trained_i (convex combination)
     # ================================================================
 
     def _fedbuff_collect(self, sat_id, local_wrapper, event_time):
-        """버퍼에 pseudo-gradient용 데이터 수집.
-        논문(Nguyen et al., 2022): staleness weighting 없이 단순 버퍼링.
-        τ는 메트릭 기록용으로만 계산."""
+        """버퍼에 학습 완료 모델 수집.
+        s(τ)는 flush 시 정규화 가중치로 사용 (stale 위성 기여 감소)."""
         tau_ver, _ = self._compute_staleness(local_wrapper, event_time)
-        # s_tau = self._staleness_function(tau_ver)
+        s_tau = self._staleness_function(tau_ver)
         loader_idx = sat_id % len(self.client_subsets)
 
         self.gs_buffer.append({
             "sat_id": sat_id,
             "state_dict": local_wrapper.model_state_dict,
-            "base_state_dict": self.satellite_base_state.get(sat_id, {}),
             "base_version": int(local_wrapper.version),
             "staleness": tau_ver,
-            "s_tau": tau_ver,
+            "s_tau": s_tau,
             "data_count": len(self.client_subsets[loader_idx]),
             "event_time": event_time,
         })
@@ -441,15 +439,17 @@ class Satellite_Manager:
         )
 
     def _fedbuff_flush(self, temp_model, force_eval=False):
-        """논문(Nguyen et al., 2022) Algorithm 1 구현.
+        """Satellite-adapted FedBuff: staleness-weighted buffered averaging.
 
-        Server-side:
-          1. Δ_avg = (1/K) Σ Δ_i,  Δ_i = base_i - trained_i
-          2. m_t = β·m_{t-1} + Δ_avg          (서버 모멘텀, β=0이면 비활성)
-          3. x_{t+1} = x_t - η_g · m_t
-        
-        주의: staleness weighting s(τ)는 FedAsync 논문(Xie et al.)의 것.
-        FedBuff는 버퍼 K를 통해 staleness를 암묵적으로 제어하므로 s(τ) 미사용.
+        위성 환경 적응:
+          논문(Nguyen et al., 2022)은 base_i - trained_i (pseudo-gradient SGD)를 사용하지만,
+          위성 환경의 구조적 고지연(mean τ≈15)에서는 base_i ≠ global_current로 인해
+          stale pseudo-gradient drift가 발생하여 발산함.
+
+          global_current 기준 + s(τ) 정규화 가중합으로 변경하면:
+            Δ_avg = Σ (s_i/Σs) × (global_current - trained_i)
+            new = global - η_g × Δ_avg
+          η_g=1.0일 때: new = Σ (s_i/Σs) × trained_i → convex combination → 수렴 안정성 보장.
         """
         if len(self.gs_buffer) == 0:
             return
@@ -465,46 +465,12 @@ class Satellite_Manager:
 
         global_sd = self.global_model_wrapper.model_state_dict
 
-        # ═══════════════ DEBUG 1: 입력 상태 검증 ═══════════════
-        self.sim_logger.info(f"   🔍 [DEBUG] === Round #{self.aggregation_round} ===")
-        # 글로벌 모델 상태
-        g_norms = [global_sd[k].float().norm().item() for k in global_sd if global_sd[k].is_floating_point()]
-        g_nan = any(torch.isnan(global_sd[k]).any() for k in global_sd if global_sd[k].is_floating_point())
-        self.sim_logger.info(
-            f"   🔍 [DEBUG] global: mean_norm={sum(g_norms)/len(g_norms):.6f}, "
-            f"max={max(g_norms):.6f}, NaN={g_nan}"
-        )
+        # Satellite-adapted: Δ_avg = Σ (s_i/Σs) × (global_current - trained_i)
+        # s(τ) 정규화 → stale 위성 기여 자동 감소, η_g=1.0에서 convex combination
+        total_s = sum(m["s_tau"] for m in self.gs_buffer)
+        if total_s == 0:
+            total_s = float(K)
 
-        # 위성별 base/trained 비교 (첫 3개)
-        for idx, m in enumerate(self.gs_buffer[:3]):
-            base_sd = m.get("base_state_dict", {})
-            trained_sd = m["state_dict"]
-            sid = m["sat_id"]
-
-            if not base_sd:
-                self.sim_logger.info(f"   🔍 [DEBUG] ⚠️ SAT_{sid}: base_state_dict 비어있음!")
-                continue
-
-            # 첫 번째 conv 레이어로 샘플링
-            sk = next((k for k in base_sd if base_sd[k].is_floating_point() and base_sd[k].dim() >= 2), None)
-            if sk:
-                bv = base_sd[sk].float()
-                tv = trained_sd[sk].float()
-                gv = global_sd[sk].float()
-                diff = bv - tv
-                self.sim_logger.info(
-                    f"   🔍 [DEBUG] SAT_{sid} [{sk}]: "
-                    f"||base||={bv.norm():.4f}, ||trained||={tv.norm():.4f}, "
-                    f"||Δ||={diff.norm():.6f}, "
-                    f"base==trained={torch.equal(bv, tv)}, "
-                    f"base==global={torch.equal(bv, gv)}, "
-                    f"||base-global||={( bv - gv).norm():.6f}, τ={m['staleness']}"
-                )
-        # ═══════════════ DEBUG 1 끝 ═══════════════
-
-        # ── Step 1: pseudo-gradient 평균 ──
-        # Δ_avg = (1/K) Σ (base_i - trained_i)
-        # s(τ) 미적용 — 논문 원본대로 단순 평균
         delta_avg = OrderedDict()
         for key in global_sd.keys():
             if not self._is_gradient_param(key, global_sd[key]):
@@ -512,77 +478,36 @@ class Satellite_Manager:
                 continue
             delta = torch.zeros_like(global_sd[key], dtype=torch.float32)
             for m in self.gs_buffer:
-                base = m["base_state_dict"][key].float()
-                trained = m["state_dict"][key].float()
-                delta += (base - trained)
-            delta_avg[key] = delta / K
+                pseudo_grad = global_sd[key].float() - m["state_dict"][key].float()
+                delta += (m["s_tau"] / total_s) * pseudo_grad
+            delta_avg[key] = delta
 
-        # ═══════════════ DEBUG 2: Δ_avg 통계 ═══════════════
-        pg_norms = [delta_avg[k].norm().item() for k in delta_avg if delta_avg[k] is not None]
-        pg_nan = any(torch.isnan(delta_avg[k]).any() for k in delta_avg if delta_avg[k] is not None)
-        pg_zero = all(n < 1e-10 for n in pg_norms)
-        self.sim_logger.info(
-            f"   🔍 [DEBUG] Δ_avg: mean={sum(pg_norms)/len(pg_norms):.8f}, "
-            f"max={max(pg_norms):.8f}, min={min(pg_norms):.8f}, "
-            f"all_zero={pg_zero}, NaN={pg_nan}"
-        )
-        # ═══════════════ DEBUG 2 끝 ═══════════════
-
-
-        # ── Step 2: 서버 모멘텀 (선택적) ──
-        # m_t = β·m_{t-1} + Δ_avg
-        # β=0이면 m_t = Δ_avg (모멘텀 비활성 → 순수 pseudo-gradient averaging)
+        # 서버 모멘텀: m_t = β·m_{t-1} + Δ_avg
         beta = FEDBUFF_SERVER_MOMENTUM
-        if beta > 0:
-            if self.server_momentum_state is None:
-                self.server_momentum_state = OrderedDict()
-                for key in delta_avg:
-                    if delta_avg[key] is not None:
-                        self.server_momentum_state[key] = delta_avg[key].clone()
-            else:
-                for key in delta_avg:
-                    if delta_avg[key] is not None and key in self.server_momentum_state:
-                        self.server_momentum_state[key] = (
-                            beta * self.server_momentum_state[key] + delta_avg[key]
-                        )
-            update_source = self.server_momentum_state
+        if self.server_momentum_state is None:
+            self.server_momentum_state = OrderedDict()
+            for key in delta_avg:
+                if delta_avg[key] is not None:
+                    self.server_momentum_state[key] = delta_avg[key].clone()
         else:
-            # β=0: 모멘텀 없이 Δ_avg 직접 사용
-            update_source = {k: v for k, v in delta_avg.items() if v is not None}
+            for key in delta_avg:
+                if delta_avg[key] is not None and key in self.server_momentum_state:
+                    self.server_momentum_state[key] = (
+                        beta * self.server_momentum_state[key] + delta_avg[key]
+                    )
 
-        # ── Step 3: 글로벌 모델 업데이트 ──
-        # x_{t+1} = x_t - η_g · m_t (또는 η_g · Δ_avg)
+        # w_{t+1} = w_t - η_g · m_t
         eta_g = FEDBUFF_SERVER_LR
         new_sd = OrderedDict()
         for key in global_sd.keys():
             if not self._is_gradient_param(key, global_sd[key]):
                 new_sd[key] = global_sd[key].clone()
-            elif key in update_source:
+            elif key in self.server_momentum_state:
                 new_sd[key] = (
-                    global_sd[key].float() - eta_g * update_source[key]
+                    global_sd[key].float() - eta_g * self.server_momentum_state[key]
                 ).to(global_sd[key].dtype).cpu()
             else:
                 new_sd[key] = global_sd[key].clone()
-
-        # ═══════════════ DEBUG 3: 업데이트 결과 ═══════════════
-        new_norms = [new_sd[k].float().norm().item() for k in new_sd if new_sd[k].is_floating_point()]
-        new_nan = any(torch.isnan(new_sd[k]).any() for k in new_sd if new_sd[k].is_floating_point())
-
-        # 샘플 레이어 전후 비교
-        sk = next((k for k in global_sd if global_sd[k].is_floating_point() and global_sd[k].dim() >= 2), None)
-        if sk:
-            before = global_sd[sk].float()
-            after = new_sd[sk].float()
-            step = before - after
-            self.sim_logger.info(
-                f"   🔍 [DEBUG] 업데이트: NaN={new_nan}, "
-                f"[{sk}] ||before||={before.norm():.4f} → ||after||={after.norm():.4f}, "
-                f"||step||={step.norm():.6f}, step/before={step.norm()/max(before.norm().item(), 1e-10):.6f}"
-            )
-
-        self.sim_logger.info(f"   🔍 [DEBUG] === 끝 ===")
-        # ═══════════════ DEBUG 3 끝 ═══════════════
-
 
         self.sim_logger.info(f"   📐 η_g={eta_g}, β={beta}, K={K}")
 
@@ -876,11 +801,6 @@ class Satellite_Manager:
                     worker_init_fn=seed_worker,
                     generator=torch.Generator().manual_seed(SEED)
                 )
-
-                # 학습 전 base state 저장 (pseudo-gradient 계산용)
-                self.satellite_base_state[sat_id] = {
-                    k: v.clone() for k, v in current_local_wrapper.model_state_dict.items()
-                }
 
                 current_local_wrapper.to_device(temp_model, device='cpu')
                 current_lr = self._get_cosine_lr()
