@@ -465,6 +465,43 @@ class Satellite_Manager:
 
         global_sd = self.global_model_wrapper.model_state_dict
 
+        # ═══════════════ DEBUG 1: 입력 상태 검증 ═══════════════
+        self.sim_logger.info(f"   🔍 [DEBUG] === Round #{self.aggregation_round} ===")
+        # 글로벌 모델 상태
+        g_norms = [global_sd[k].float().norm().item() for k in global_sd if global_sd[k].is_floating_point()]
+        g_nan = any(torch.isnan(global_sd[k]).any() for k in global_sd if global_sd[k].is_floating_point())
+        self.sim_logger.info(
+            f"   🔍 [DEBUG] global: mean_norm={sum(g_norms)/len(g_norms):.6f}, "
+            f"max={max(g_norms):.6f}, NaN={g_nan}"
+        )
+
+        # 위성별 base/trained 비교 (첫 3개)
+        for idx, m in enumerate(self.gs_buffer[:3]):
+            base_sd = m.get("base_state_dict", {})
+            trained_sd = m["state_dict"]
+            sid = m["sat_id"]
+
+            if not base_sd:
+                self.sim_logger.info(f"   🔍 [DEBUG] ⚠️ SAT_{sid}: base_state_dict 비어있음!")
+                continue
+
+            # 첫 번째 conv 레이어로 샘플링
+            sk = next((k for k in base_sd if base_sd[k].is_floating_point() and base_sd[k].dim() >= 2), None)
+            if sk:
+                bv = base_sd[sk].float()
+                tv = trained_sd[sk].float()
+                gv = global_sd[sk].float()
+                diff = bv - tv
+                self.sim_logger.info(
+                    f"   🔍 [DEBUG] SAT_{sid} [{sk}]: "
+                    f"||base||={bv.norm():.4f}, ||trained||={tv.norm():.4f}, "
+                    f"||Δ||={diff.norm():.6f}, "
+                    f"base==trained={torch.equal(bv, tv)}, "
+                    f"base==global={torch.equal(bv, gv)}, "
+                    f"||base-global||={( bv - gv).norm():.6f}, τ={m['staleness']}"
+                )
+        # ═══════════════ DEBUG 1 끝 ═══════════════
+
         # ── Step 1: pseudo-gradient 평균 ──
         # Δ_avg = (1/K) Σ (base_i - trained_i)
         # s(τ) 미적용 — 논문 원본대로 단순 평균
@@ -479,6 +516,18 @@ class Satellite_Manager:
                 trained = m["state_dict"][key].float()
                 delta += (base - trained)
             delta_avg[key] = delta / K
+
+        # ═══════════════ DEBUG 2: Δ_avg 통계 ═══════════════
+        pg_norms = [delta_avg[k].norm().item() for k in delta_avg if delta_avg[k] is not None]
+        pg_nan = any(torch.isnan(delta_avg[k]).any() for k in delta_avg if delta_avg[k] is not None)
+        pg_zero = all(n < 1e-10 for n in pg_norms)
+        self.sim_logger.info(
+            f"   🔍 [DEBUG] Δ_avg: mean={sum(pg_norms)/len(pg_norms):.8f}, "
+            f"max={max(pg_norms):.8f}, min={min(pg_norms):.8f}, "
+            f"all_zero={pg_zero}, NaN={pg_nan}"
+        )
+        # ═══════════════ DEBUG 2 끝 ═══════════════
+
 
         # ── Step 2: 서버 모멘텀 (선택적) ──
         # m_t = β·m_{t-1} + Δ_avg
@@ -514,6 +563,26 @@ class Satellite_Manager:
                 ).to(global_sd[key].dtype).cpu()
             else:
                 new_sd[key] = global_sd[key].clone()
+
+        # ═══════════════ DEBUG 3: 업데이트 결과 ═══════════════
+        new_norms = [new_sd[k].float().norm().item() for k in new_sd if new_sd[k].is_floating_point()]
+        new_nan = any(torch.isnan(new_sd[k]).any() for k in new_sd if new_sd[k].is_floating_point())
+
+        # 샘플 레이어 전후 비교
+        sk = next((k for k in global_sd if global_sd[k].is_floating_point() and global_sd[k].dim() >= 2), None)
+        if sk:
+            before = global_sd[sk].float()
+            after = new_sd[sk].float()
+            step = before - after
+            self.sim_logger.info(
+                f"   🔍 [DEBUG] 업데이트: NaN={new_nan}, "
+                f"[{sk}] ||before||={before.norm():.4f} → ||after||={after.norm():.4f}, "
+                f"||step||={step.norm():.6f}, step/before={step.norm()/max(before.norm().item(), 1e-10):.6f}"
+            )
+
+        self.sim_logger.info(f"   🔍 [DEBUG] === 끝 ===")
+        # ═══════════════ DEBUG 3 끝 ═══════════════
+
 
         self.sim_logger.info(f"   📐 η_g={eta_g}, β={beta}, K={K}")
 
