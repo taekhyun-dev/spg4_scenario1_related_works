@@ -38,7 +38,7 @@ from config import (
     # FedBuff
     FEDBUFF_K, FEDBUFF_SERVER_LR, FEDBUFF_SERVER_MOMENTUM,
     # FedSpace
-    FEDSPACE_PREDICT_WINDOW_SEC, FEDSPACE_MIN_BUFFER, FEDSPACE_STALENESS_WEIGHT,
+    FEDSPACE_PREDICT_WINDOW_SEC, FEDSPACE_MIN_BUFFER, FEDSPACE_STALENESS_WEIGHT, FEDSPACE_SERVER_MOMENTUM,
     # FedOrbit
     FEDORBIT_INTRA_AGG_INTERVAL_SEC, FEDORBIT_SERVER_LR,
     # Common
@@ -483,7 +483,11 @@ class Satellite_Manager:
             delta_avg[key] = delta
 
         # 서버 모멘텀: m_t = β·m_{t-1} + Δ_avg
-        beta = FEDBUFF_SERVER_MOMENTUM
+        if self.strategy == "fedbuff":
+            beta = FEDBUFF_SERVER_MOMENTUM
+        elif self.strategy == "fedspace":
+            beta = FEDSPACE_SERVER_MOMENTUM
+            
         if self.server_momentum_state is None:
             self.server_momentum_state = OrderedDict()
             for key in delta_avg:
