@@ -21,6 +21,7 @@ import asyncio
 import torch
 import numpy as np
 import math
+import random
 from datetime import datetime, timedelta, timezone
 from utils.skyfield_utils import EarthSatellite
 from utils.logging_setup import setup_loggers, KST
@@ -38,7 +39,7 @@ from config_fedpda import (
     # FedBuff
     FEDBUFF_K, FEDBUFF_SERVER_LR, FEDBUFF_SERVER_MOMENTUM,
     # FedSpace
-    FEDSPACE_PREDICT_WINDOW_SEC, FEDSPACE_MIN_BUFFER, FEDSPACE_STALENESS_WEIGHT,
+    FEDSPACE_PREDICT_WINDOW_SEC, FEDSPACE_MIN_BUFFER, FEDSPACE_STALENESS_WEIGHT, FEDSPACE_SERVER_MOMENTUM,
     # FedOrbit
     FEDORBIT_INTRA_AGG_INTERVAL_SEC, FEDORBIT_SERVER_LR,
     # FedPDA (Proposed)
@@ -57,6 +58,7 @@ from ml.training import train_model
 from ml.aggregation import weighted_update
 from ml.metrics import MetricsCollector
 
+SEED = 42
 
 class Satellite_Manager:
     """
@@ -300,7 +302,7 @@ class Satellite_Manager:
         return acc, avg_loss
 
     def _is_trained_since_global(self, sat_id) -> bool:
-        return self.satellite_last_trained_version[sat_id] > self.global_model_wrapper.version
+        return self.satellite_last_trained_version[sat_id] > 0
 
     @staticmethod
     def _is_gradient_param(key: str, tensor: torch.Tensor) -> bool:
@@ -445,7 +447,18 @@ class Satellite_Manager:
         )
 
     def _fedbuff_flush(self, temp_model, force_eval=False):
-        """K개 모였을 때 pseudo-gradient averaging으로 집계"""
+        """Satellite-adapted FedBuff: staleness-weighted buffered averaging.
+
+        위성 환경 적응:
+          논문(Nguyen et al., 2022)은 base_i - trained_i (pseudo-gradient SGD)를 사용하지만,
+          위성 환경의 구조적 고지연(mean τ≈15)에서는 base_i ≠ global_current로 인해
+          stale pseudo-gradient drift가 발생하여 발산함.
+
+          global_current 기준 + s(τ) 정규화 가중합으로 변경하면:
+            Δ_avg = Σ (s_i/Σs) × (global_current - trained_i)
+            new = global - η_g × Δ_avg
+          η_g=1.0일 때: new = Σ (s_i/Σs) × trained_i → convex combination → 수렴 안정성 보장.
+        """
         if len(self.gs_buffer) == 0:
             return
 
@@ -460,8 +473,12 @@ class Satellite_Manager:
 
         global_sd = self.global_model_wrapper.model_state_dict
 
-        # pseudo-gradient: Δ_i = w_base - w_trained
-        # 논문: Δ_avg = (1/K) * Σ s(τ_i) * Δ_i
+        # Satellite-adapted: Δ_avg = Σ (s_i/Σs) × (global_current - trained_i)
+        # s(τ) 정규화 → stale 위성 기여 자동 감소, η_g=1.0에서 convex combination
+        total_s = sum(m["s_tau"] for m in self.gs_buffer)
+        if total_s == 0:
+            total_s = float(K)
+
         delta_avg = OrderedDict()
         for key in global_sd.keys():
             if not self._is_gradient_param(key, global_sd[key]):
@@ -469,12 +486,16 @@ class Satellite_Manager:
                 continue
             delta = torch.zeros_like(global_sd[key], dtype=torch.float32)
             for m in self.gs_buffer:
-                pseudo_grad = m["base_state_dict"][key].float() - m["state_dict"][key].float()
-                delta += (1.0 / K) * m["s_tau"] * pseudo_grad
+                pseudo_grad = global_sd[key].float() - m["state_dict"][key].float()
+                delta += (m["s_tau"] / total_s) * pseudo_grad
             delta_avg[key] = delta
 
         # 서버 모멘텀: m_t = β·m_{t-1} + Δ_avg
-        beta = FEDBUFF_SERVER_MOMENTUM
+        if self.strategy == "fedbuff":
+            beta = FEDBUFF_SERVER_MOMENTUM
+        elif self.strategy == "fedspace":
+            beta = FEDSPACE_SERVER_MOMENTUM
+
         if self.server_momentum_state is None:
             self.server_momentum_state = OrderedDict()
             for key in delta_avg:
@@ -753,7 +774,17 @@ class Satellite_Manager:
             f"   📐 [PDA] plane weights: {', '.join(f'P{p}:{w:.3f}' for p, w in sorted(plane_weight_sum.items()))}"
         )
 
-        # pseudo-gradient: Δ_avg = Σ w_i * (base_i - trained_i)
+        # Satellite-adapted Diversity-weighted:
+        #   Δ_avg = Σ w_i × (global_current - trained_i)
+        #   w_i = normalized(s(τ_i) / c_{p_i})  (diversity weight)
+        #
+        # η_g=1.0에서 전개:
+        #   new = global - 1.0 × Σ w_i × (global - trained_i)
+        #       = Σ w_i × trained_i  (convex combination, 수렴 안정)
+        #
+        # 논문 원본(base_i - trained_i) 대신 global_current 기준 사용:
+        #   위성 환경에서 base_i가 stale할 때 pseudo-gradient drift 방지
+
         delta_avg = OrderedDict()
         for key in global_sd.keys():
             if not self._is_gradient_param(key, global_sd[key]):
@@ -761,7 +792,7 @@ class Satellite_Manager:
                 continue
             delta = torch.zeros_like(global_sd[key], dtype=torch.float32)
             for m, nw in zip(self.pda_buffer, norm_weights):
-                pseudo_grad = m["base_state_dict"][key].float() - m["state_dict"][key].float()
+                pseudo_grad = global_sd[key].float() - m["state_dict"][key].float()
                 delta += nw * pseudo_grad
             delta_avg[key] = delta
 
@@ -851,12 +882,24 @@ class Satellite_Manager:
         plane_id = self.get_plane_id(sat_id)
         loader_idx = sat_id % len(self.client_subsets)
 
-        self.plane_buffers[plane_id].append({
+        new_entry = {
             "sat_id": sat_id,
             "state_dict": local_wrapper.model_state_dict,
             "version": local_wrapper.version,
             "data_count": len(self.client_subsets[loader_idx]),
-        })
+        }
+
+        # 기존 엔트리 교체 (같은 위성 ID가 있으면 최신으로 덮어쓰기)
+        buf = self.plane_buffers[plane_id]
+        replaced = False
+        for idx, entry in enumerate(buf):
+            if entry["sat_id"] == sat_id:
+                buf[idx] = new_entry
+                replaced = True
+                break
+
+        if not replaced:
+            buf.append(new_entry)
 
     def _fedorbit_try_intra_aggregate(self, plane_id, event_time, temp_model):
         """Plane 내 ISL 집계: 주기적으로 plane 내 모델들을 FedAvg"""
@@ -940,7 +983,7 @@ class Satellite_Manager:
 
         self._update_global_and_evaluate(
             new_sd, new_version, result["participants"], temp_model,
-            staleness_values=result["staleness_values"], sim_time=event_time,
+            staleness_values=result.get("staleness_values", [0]), sim_time=event_time,
             plane_id=plane_id,
         )
 
@@ -1012,9 +1055,17 @@ class Satellite_Manager:
 
                 loader_idx = sat_id % len(self.client_subsets)
                 dataset = self.client_subsets[loader_idx]
+
+                def seed_worker(worker_id):
+                    worker_seed = torch.initial_seed() % 2**32
+                    np.random.seed(worker_seed)
+                    random.seed(worker_seed)
+
                 train_loader = DataLoader(
                     dataset, batch_size=BATCH_SIZE, shuffle=True,
-                    num_workers=8, pin_memory=True, persistent_workers=False
+                    num_workers=8, pin_memory=True,
+                    worker_init_fn=seed_worker,
+                    generator=torch.Generator().manual_seed(SEED)
                 )
 
                 # 학습 전 base state 저장 (pseudo-gradient 계산용)
@@ -1198,6 +1249,13 @@ def parse_tle_epoch(tle_path: str = "constellation.tle") -> datetime:
 
 def main():
     try:
+        random.seed(SEED)
+        np.random.seed(SEED)
+        torch.manual_seed(SEED)
+        torch.cuda.manual_seed_all(SEED)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    
         # 시뮬레이션 시작 시간 결정
         if SIM_START_TIME is not None:
             start_time = SIM_START_TIME
