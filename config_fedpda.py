@@ -66,6 +66,12 @@ FEDPDA_MIN_DIVERSITY = 2             # 최소 고유 plane 수
 FEDPDA_MAX_BUFFER = 15               # 다양성 미충족 시 강제 flush 상한
 FEDPDA_TIMEOUT_SEC = 1800            # 다양성 대기 제한 (30분)
 FEDPDA_SERVER_MOMENTUM = 0.0         # 서버 모멘텀 beta
+FEDPDA_SERVER_LR = 0.7              # η_g=0.7: 글로벌 30% 보존 + 로컬 70% 반영
+                                    # η_g=1.0이면 글로벌 완전 교체 (기존 방식)
+                                    # η_g=0.7이면 (1-0.7)=30% 글로벌 보존
+                                    # FedAsync(α_eff=0.122→87.8% 보존)보다 공격적이지만
+                                    # diversity-weighted 버퍼 평균이 단일 위성보다
+                                    # 대표성이 높으므로 합리적
 
 # === 공통: 로컬 학습 ===
 LOCAL_EPOCHS = 5

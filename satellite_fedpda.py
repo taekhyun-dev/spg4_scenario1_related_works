@@ -44,7 +44,7 @@ from config_fedpda import (
     FEDORBIT_INTRA_AGG_INTERVAL_SEC, FEDORBIT_SERVER_LR,
     # FedPDA (Proposed)
     FEDPDA_PREDICT_WINDOW_SEC, FEDPDA_MIN_BUFFER, FEDPDA_STALENESS_WEIGHT,
-    FEDPDA_MIN_DIVERSITY, FEDPDA_MAX_BUFFER, FEDPDA_TIMEOUT_SEC, FEDPDA_SERVER_MOMENTUM,
+    FEDPDA_MIN_DIVERSITY, FEDPDA_MAX_BUFFER, FEDPDA_TIMEOUT_SEC, FEDPDA_SERVER_MOMENTUM, FEDPDA_SERVER_LR,
     # Common
     BASE_LR, MIN_LR, EVAL_EVERY_N_ROUNDS, STALENESS_THRESHOLD,
     NUM_CLIENTS, DIRICHLET_ALPHA, BATCH_SIZE, SAMPLES_PER_CLIENT,
@@ -727,11 +727,13 @@ class Satellite_Manager:
     def _fedpda_flush(self, temp_model, force_eval=False):
         """FedPDA diversity-weighted pseudo-gradient averaging.
 
-        핵심 차이점 (vs FedBuff/FedSpace):
-          - 가중치: w_i = s(τ_i) / plane_count(plane_i)
-          - 과대대표 plane의 위성은 해당 plane 내 위성 수로 나눠져 기여 감소
-          - 소수 plane의 위성은 상대적으로 부스트
-          - 정규화 후 convex combination → 수렴 안정성 보장
+        FedBuff/FedSpace 대비 3가지 차별화:
+          1. Diversity 가중치: w_i = s(τ_i) / c_{p_i}
+             과대대표 plane 기여 감소, 소수 plane 부스트
+          2. Global Preservation: η_g < 1.0
+             w_new = (1-η_g)·w_global + η_g·Σ nw_i·w_trained_i
+             severe Non-IID에서 진동 억제 (기존: η_g=1.0 → 글로벌 완전 교체)
+          3. Dual-condition flush: size ≥ threshold AND planes ≥ MIN_DIVERSITY
         """
         if len(self.pda_buffer) == 0:
             return
@@ -774,16 +776,22 @@ class Satellite_Manager:
             f"   📐 [PDA] plane weights: {', '.join(f'P{p}:{w:.3f}' for p, w in sorted(plane_weight_sum.items()))}"
         )
 
-        # Satellite-adapted Diversity-weighted:
-        #   Δ_avg = Σ w_i × (global_current - trained_i)
-        #   w_i = normalized(s(τ_i) / c_{p_i})  (diversity weight)
+        # ── Diversity-Weighted Pseudo-Gradient with Global Preservation ──
         #
-        # η_g=1.0에서 전개:
-        #   new = global - 1.0 × Σ w_i × (global - trained_i)
-        #       = Σ w_i × trained_i  (convex combination, 수렴 안정)
+        # 수식:
+        #   Δ_avg = Σ nw_i × (w_global - w_trained_i)   (nw_i = diversity weight)
+        #   w_new = w_global - η_g × Δ_avg
+        #         = (1 - η_g) × w_global + η_g × Σ nw_i × w_trained_i
         #
-        # 논문 원본(base_i - trained_i) 대신 global_current 기준 사용:
-        #   위성 환경에서 base_i가 stale할 때 pseudo-gradient drift 방지
+        # η_g < 1.0 → 글로벌 모델의 (1-η_g)가 보존됨
+        # 이는 FedAsync의 mixing ratio를 버퍼 전략에 일반화한 것:
+        #   FedAsync:  w = (1-α_eff)·w_g + α_eff·w_local     (단일 위성)
+        #   FedPDA:    w = (1-η_g)·w_g + η_g·Σ nw_i·w_i     (diversity-weighted 다수 위성)
+        #
+        # β=0 (모멘텀 비사용) → severe Non-IID에서 모멘텀 발산 방지
+
+        eta_g = FEDPDA_SERVER_LR
+        beta = FEDPDA_SERVER_MOMENTUM  # 0.0 (비사용)
 
         delta_avg = OrderedDict()
         for key in global_sd.keys():
@@ -797,34 +805,40 @@ class Satellite_Manager:
             delta_avg[key] = delta
 
         # 서버 모멘텀: m_t = β·m_{t-1} + Δ_avg
-        beta = FEDPDA_SERVER_MOMENTUM
-        if self.pda_momentum_state is None:
-            self.pda_momentum_state = OrderedDict()
-            for key in delta_avg:
-                if delta_avg[key] is not None:
-                    self.pda_momentum_state[key] = delta_avg[key].clone()
+        # 서버 모멘텀 (β > 0일 때만 작동, 현재 β=0.0)
+        if beta > 0:
+            if self.pda_momentum_state is None:
+                self.pda_momentum_state = OrderedDict()
+                for key in delta_avg:
+                    if delta_avg[key] is not None:
+                        self.pda_momentum_state[key] = delta_avg[key].clone()
+            else:
+                for key in delta_avg:
+                    if delta_avg[key] is not None and key in self.pda_momentum_state:
+                        self.pda_momentum_state[key] = (
+                            beta * self.pda_momentum_state[key] + delta_avg[key]
+                        )
+            effective_delta = self.pda_momentum_state
         else:
-            for key in delta_avg:
-                if delta_avg[key] is not None and key in self.pda_momentum_state:
-                    self.pda_momentum_state[key] = (
-                        beta * self.pda_momentum_state[key] + delta_avg[key]
-                    )
+            effective_delta = delta_avg
 
-        # w_{t+1} = w_t - η_g · m_t
-        eta_g = FEDBUFF_SERVER_LR  # 공통 서버 학습률
+        # w_{t+1} = w_t - η_g · Δ = (1-η_g)·w_t + η_g · Σ nw_i · w_trained_i
         new_sd = OrderedDict()
         for key in global_sd.keys():
             if not self._is_gradient_param(key, global_sd[key]):
                 new_sd[key] = global_sd[key].clone()
-            elif key in self.pda_momentum_state:
+            elif effective_delta.get(key) is not None:
                 new_sd[key] = (
-                    global_sd[key].float() - eta_g * self.pda_momentum_state[key]
+                    global_sd[key].float() - eta_g * effective_delta[key]
                 ).to(global_sd[key].dtype).cpu()
             else:
                 new_sd[key] = global_sd[key].clone()
 
+        retention_pct = (1.0 - eta_g) * 100
+
         self.sim_logger.info(
-            f"   📐 η_g={eta_g}, β={beta}, K={K}, "
+            f"   📐 η_g={eta_g} (global retention={retention_pct:.0f}%), "
+            f"β={beta}, K={K}, "
             f"diversity={stats['unique_planes']}/{NUM_PLANES}"
         )
 
