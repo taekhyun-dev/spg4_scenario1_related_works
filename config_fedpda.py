@@ -1,4 +1,4 @@
-# config.py
+# config_fedpda.py
 # ============================================================
 # LEO 위성 비동기 연합학습 비교 실험 설정
 # 570km Walker-Delta: 17 planes × 14 sats = 238 satellites
@@ -8,9 +8,8 @@
 #   "fedbuff"   : FedBuff   (Nguyen et al., 2022)
 #   "fedspace"  : FedSpace  (So et al., 2022)
 #   "fedorbit"  : FedOrbit  (Jabbarpour et al., 2024)
-#   "fedpda"    : FedPDA    (Proposed — Plane-Diversity-Aware)
+#   "fedpda"    : FedPDA    (Proposed)
 # ============================================================
-
 from datetime import datetime, timedelta, timezone
 
 # === 전략 선택 ===
@@ -39,39 +38,31 @@ FEDBUFF_SERVER_MOMENTUM = 0.9
 FEDSPACE_PREDICT_WINDOW_SEC = 600
 FEDSPACE_MIN_BUFFER = 3
 FEDSPACE_STALENESS_WEIGHT = 0.7
-FEDSPACE_SERVER_MOMENTUM = 0.0
+FEDSPACE_SERVER_MOMENTUM = 0.0  # β=0: severe Non-IID 안정성
 
 # === FedOrbit (Jabbarpour et al., 2024) ===
-FEDORBIT_INTRA_AGG_INTERVAL_SEC = 1800
+FEDORBIT_INTRA_AGG_INTERVAL_SEC = 1800  # plane 내 ISL 집계 주기
 FEDORBIT_SERVER_LR = 1.0
 
 # === FedPDA (Proposed) ===
-# Plane-Diversity-Aware Adaptive Buffering
-#
-# 핵심: FedSpace의 동적 시점 최적화 + 궤도면 다양성 인식
-#
-# Flush 조건 (dual-condition):
-#   Primary:   buffer_size >= dynamic_threshold AND unique_planes >= MIN_DIVERSITY
-#   Timeout:   oldest_in_buffer 이후 TIMEOUT_SEC 초과 시 강제 flush (staleness 방지)
-#   Fallback:  buffer_size >= MAX_BUFFER 시 diversity 무관 강제 flush
-#
-# 가중치 (diversity-weighted):
-#   w_i = s(tau_i) / plane_count(plane_i)  -> 과대대표 plane 패널티
-#   정규화 후 convex combination
-#
-FEDPDA_PREDICT_WINDOW_SEC = 600      # 접촉 예측 윈도우
-FEDPDA_MIN_BUFFER = 3                # 최소 버퍼 크기
-FEDPDA_STALENESS_WEIGHT = 0.7        # 동적 threshold 가중치
-FEDPDA_MIN_DIVERSITY = 2             # 최소 고유 plane 수
-FEDPDA_MAX_BUFFER = 15               # 다양성 미충족 시 강제 flush 상한
-FEDPDA_TIMEOUT_SEC = 1800            # 다양성 대기 제한 (30분)
-FEDPDA_SERVER_MOMENTUM = 0.0         # 서버 모멘텀 beta
+FEDPDA_PREDICT_WINDOW_SEC = 600     # 궤도 예측 윈도우 (FedSpace 기반)
+FEDPDA_MIN_BUFFER = 3               # 최소 버퍼 크기
+FEDPDA_STALENESS_WEIGHT = 0.7       # 동적 threshold의 staleness 가중치
+FEDPDA_MIN_DIVERSITY = 2            # flush 최소 궤도면 다양성
+FEDPDA_MAX_BUFFER = 15              # 강제 flush 버퍼 상한
+FEDPDA_TIMEOUT_SEC = 1800           # 다양성 대기 timeout (s)
+FEDPDA_SERVER_MOMENTUM = 0.0        # β=0: 모멘텀 발산 방지
 FEDPDA_SERVER_LR = 0.7              # η_g=0.7: 글로벌 30% 보존 + 로컬 70% 반영
-                                    # η_g=1.0이면 글로벌 완전 교체 (기존 방식)
-                                    # η_g=0.7이면 (1-0.7)=30% 글로벌 보존
-                                    # FedAsync(α_eff=0.122→87.8% 보존)보다 공격적이지만
-                                    # diversity-weighted 버퍼 평균이 단일 위성보다
-                                    # 대표성이 높으므로 합리적
+
+# === FedPDA ISL Extension ===
+# ISL 비교 실험: True/False 전환으로 ISL 유무 비교
+FEDPDA_ISL_ENABLED = True           # ISL 활성화 여부
+FEDPDA_ISL_HOP_TIME_SEC = 30        # 궤도면 간 ISL 1홉 전송 시간 (초)
+                                    # ResNet-9 (~26MB), LEO ISL ~100Mbps 기준
+                                    # 핸드셰이크+확인응답 포함 30초
+FEDPDA_ISL_MAX_HOPS = 3             # 최대 릴레이 홉 수
+FEDPDA_ISL_MIN_GAIN_SEC = 300       # ISL 릴레이 최소 시간 이득 (5분)
+                                    # 이득이 이보다 작으면 직접 GS 접촉 대기
 
 # === 공통: 로컬 학습 ===
 LOCAL_EPOCHS = 5
@@ -84,10 +75,10 @@ IOT_FLYOVER_THRESHOLD_DEG = 30.0
 GS_FLYOVER_THRESHOLD_DEG = 10.0
 
 # === 공통: 데이터 ===
-NUM_CLIENTS = 238
-DIRICHLET_ALPHA = 0.1
+NUM_CLIENTS = 238               # 위성 수와 동일
+DIRICHLET_ALPHA = 0.5           # 0.5 = moderate, 0.1 = severe Non-IID
 BATCH_SIZE = 128
-SAMPLES_PER_CLIENT = 2000
+SAMPLES_PER_CLIENT = 2000       # 위성당 학습 데이터 수
 
 # === 공통: 평가/필터링 ===
 EVAL_EVERY_N_ROUNDS = 5

@@ -16,9 +16,9 @@ import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
-STRATEGIES = ["fedasync", "fedbuff", "fedspace", "fedorbit"]
-CONFIG_PATH = Path("config.py")
-SATELLITE_SCRIPT = "satellite.py"  # 실행할 메인 스크립트 경로
+STRATEGIES = ["fedasync", "fedbuff", "fedspace", "fedorbit", "fedpda"]
+CONFIG_PATH = Path("config_fedpda.py")
+SATELLITE_SCRIPT = "satellite_fedpda_isl.py"  # 실행할 메인 스크립트 경로
 
 
 def set_strategy(strategy: str):

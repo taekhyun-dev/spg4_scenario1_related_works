@@ -224,7 +224,7 @@ class MetricsCollector:
             "max_updates_per_gsl": max(self.effective_updates_per_gsl, default=0),
         }
 
-    def save(self, output_dir: str = "./results"):
+    def save(self, output_dir: str = "./results/fedpda_isl"):
         """결과를 JSON + CSV로 저장"""
         out = Path(output_dir)
         out.mkdir(parents=True, exist_ok=True)
