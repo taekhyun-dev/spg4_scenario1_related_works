@@ -54,9 +54,9 @@ SAMPLES_PER_CLIENT = 2000
 # Master 로컬 집계 파라미터
 BUFFER_MIN_SIZE = 3                             # flush 최소 버퍼
 BUFFER_MAX_SIZE = 15                            # 강제 flush 상한
-BUFFER_MIN_DIVERSITY = 2                        # flush 최소 궤도면 다양성
+BUFFER_MIN_DIVERSITY = 1                        # flush 최소 궤도면 다양성 (1=다양성 제약 해제)
 BUFFER_TIMEOUT_SEC = 3600                       # 다양성 대기 timeout (1시간)
-SERVER_LR = 0.7                                 # η_g: 글로벌 30% 보존 + 로컬 70% 반영
+SERVER_LR = 0.5                                 # η_g: 글로벌 50% 보존 + 로컬 50% 반영
 SERVER_MOMENTUM = 0.0                           # β=0: 모멘텀 비활성화
 
 # === Master 간 동기화 ===

@@ -389,23 +389,10 @@ class OrbitalFLManager:
 
         global_sd = self.global_model_wrapper.model_state_dict
 
-        # Plane-diversity-aware 가중치
-        raw_weights = []
-        for e in buffer:
-            c_p = plane_counts[e["plane_id"]]
-            raw_weights.append(e["s_tau"] / c_p)
+        # Staleness 기반 가중치 (plane diversity 제거)
+        raw_weights = [e["s_tau"] for e in buffer]
         total_w = sum(raw_weights) or float(K)
         norm_weights = [w / total_w for w in raw_weights]
-
-        # 면별 가중치 로깅
-        plane_weight_sum = {}
-        for e, nw in zip(buffer, norm_weights):
-            p = e["plane_id"]
-            plane_weight_sum[p] = plane_weight_sum.get(p, 0.0) + nw
-        self.sim_logger.info(
-            f"   📐 plane weights: "
-            f"{', '.join(f'P{p}:{w:.3f}' for p, w in sorted(plane_weight_sum.items()))}"
-        )
 
         # Pseudo-gradient 계산
         eta_g = SERVER_LR
@@ -735,7 +722,7 @@ class OrbitalFLManager:
         self.sim_logger.info(f"    경로: ring relay (인접 면 경유, {math.ceil(NUM_MASTERS/2)}라운드)")
 
         # 메트릭 저장
-        self.metrics.print_summary(self.sim_logger)
+        self.metrics.print_summary(TOTAL_SATS, logger=self.sim_logger)
         results_dir = Path("results/orbital_fl")
         results_dir.mkdir(parents=True, exist_ok=True)
         self.metrics.save(str(results_dir))
