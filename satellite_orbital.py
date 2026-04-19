@@ -529,15 +529,13 @@ class OrbitalFLManager:
         )
 
         if g_acc is not None:
-            sim_hours = (current_time - self.start_time).total_seconds() / 3600 if current_time else 0
             self.metrics.record_aggregation(
                 round_num=self.aggregation_round,
+                sim_time=current_time,
                 accuracy=g_acc,
                 loss=g_loss,
-                num_participants=len(participating_ids),
+                participating_ids=participating_ids,
                 staleness_values=[],
-                sim_time=current_time,
-                sim_hours=sim_hours,
             )
 
             if g_acc > self.best_acc:
