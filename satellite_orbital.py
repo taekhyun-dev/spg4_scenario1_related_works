@@ -85,7 +85,12 @@ def compute_delivery_delay(src_sat_id: int, master_sat_id: int) -> float:
     return total_hops * ISL_HOP_TIME_SEC
 
 def compute_sync_delay() -> float:
-    """Master 간 ring 동기화 지연 (초)"""
+    """
+    Master 간 ring 동기화 지연 (초).
+    N=1이면 동기화 대상이 없으므로 0을 반환 (Master flush가 곧 글로벌 업데이트).
+    """
+    if NUM_MASTERS <= 1:
+        return 0.0
     rounds = math.ceil(NUM_MASTERS / 2)
     spacing = NUM_PLANES / NUM_MASTERS
     return rounds * spacing * ISL_HOP_TIME_SEC
@@ -730,9 +735,9 @@ class OrbitalFLManager:
         self.sim_logger.info(f"    동기화 지연: {self.sync_delay:.1f}초")
         self.sim_logger.info(f"    경로: ring relay (인접 면 경유, {math.ceil(NUM_MASTERS/2)}라운드)")
 
-        # 메트릭 저장
+        # 메트릭 저장 (NUM_MASTERS별로 분리)
         self.metrics.print_summary(TOTAL_SATS, logger=self.sim_logger)
-        results_dir = Path("results/orbital_fl")
+        results_dir = Path(f"results/orbital_fl_M{NUM_MASTERS}")
         results_dir.mkdir(parents=True, exist_ok=True)
         self.metrics.save(str(results_dir))
         self.sim_logger.info(f"\n  결과 저장: {results_dir}/")
@@ -744,7 +749,7 @@ class OrbitalFLManager:
 # ================================================================
 
 async def main():
-    log_dir = Path("logs/orbital_fl")
+    log_dir = Path(f"logs/orbital_fl_M{NUM_MASTERS}")
     log_dir.mkdir(parents=True, exist_ok=True)
     sim_logger, perf_logger = setup_loggers(
         sim_log_path=str(log_dir / "simulation.log"),
