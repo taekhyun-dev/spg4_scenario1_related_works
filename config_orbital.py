@@ -27,10 +27,17 @@ SIM_START_TIME = datetime(2026, 2, 18, 0, 0, 0, tzinfo=timezone.utc)
 SIM_DURATION_DAYS = 7
 
 # === 관측/학습 스케줄 ===
-# Worker 위성이 데이터 수집 후 로컬 학습을 수행하는 평균 간격 (초)
-# SSA/remote sensing 데이터 수집 주기 반영
-OBSERVATION_INTERVAL_SEC = 14400                # 4시간 평균
-OBSERVATION_JITTER_SEC = 3600                   # ±1시간 랜덤 지터
+# 학습 트리거 근거: 궤도 주기 × 재방문 궤도 수
+# - 570km LEO 궤도 주기 ≈ 96분
+# - 1 궤도당 지구 자전으로 ground track이 서쪽으로 ~22.5° 이동
+# - REVISIT_ORBITS = 3 궤도 동안 약 67.5°의 경도 범위를 커버
+#   → 단일 위성이 지역적 데이터 다양성 확보 가능
+# - 단일 위성의 동일 지역 완전 재방문은 ~15궤도(1일) 소요되므로
+#   3궤도는 부분 재방문 + 새로운 관측 영역을 균형 있게 포함
+REVISIT_ORBITS = 3                                          # 재방문 궤도 수 (학습 주기)
+OBSERVATION_INTERVAL_SEC = ORBIT_PERIOD_SEC * REVISIT_ORBITS  # 17,280초 (4.8시간)
+OBSERVATION_JITTER_ORBITS = 1                               # ±1 궤도 랜덤 지터
+OBSERVATION_JITTER_SEC = ORBIT_PERIOD_SEC * OBSERVATION_JITTER_ORBITS  # ±96분
 
 # === ISL 통신 ===
 ISL_HOP_TIME_SEC = 7.1                          # 1홉 총 시간 (SGP4 실측 기반)

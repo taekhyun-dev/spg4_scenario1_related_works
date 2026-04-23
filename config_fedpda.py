@@ -61,8 +61,10 @@ FEDPDA_ISL_HOP_TIME_SEC = 30        # 궤도면 간 ISL 1홉 전송 시간 (초)
                                     # ResNet-9 (~26MB), LEO ISL ~100Mbps 기준
                                     # 핸드셰이크+확인응답 포함 30초
 FEDPDA_ISL_MAX_HOPS = 3             # 최대 릴레이 홉 수
-FEDPDA_ISL_MIN_GAIN_SEC = 300       # ISL 릴레이 최소 시간 이득 (5분)
-                                    # 이득이 이보다 작으면 직접 GS 접촉 대기
+FEDPDA_ISL_MIN_GAIN_SEC = 0         # ISL 릴레이 최소 시간 이득
+                                    # 0: gain > 0이면 무조건 릴레이 (수학적으로 타당)
+                                    # relay_wait에 이미 ISL 비용이 반영되어 있으므로
+                                    # 추가 임계값은 불필요한 보수적 필터일 뿐
 
 # === 공통: 로컬 학습 ===
 LOCAL_EPOCHS = 5

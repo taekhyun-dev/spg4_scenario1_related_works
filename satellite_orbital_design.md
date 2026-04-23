@@ -195,10 +195,34 @@ heapq.heappush(event_queue, (time, seq, event))
 기존 시뮬레이터에서는 SGP4 궤도 전파 + Skyfield로 IoT 사이트(Amazon, Great Barrier Reef, Abisko)
 상공 통과 시점을 계산하여 학습 이벤트를 생성했다.
 
-### 5.2 새 시스템: 관측 주기 기반
+### 5.2 새 시스템: 궤도 주기 × 재방문 기반
 
 Orbital Data Center에서는 위성이 스스로 데이터를 생성한다(SSA, remote sensing, 지상 관측).
-데이터 수집 주기를 기반으로 학습 이벤트를 생성한다.
+학습 트리거를 **궤도역학의 재방문 주기**와 연동하여 물리적 근거를 부여한다.
+
+#### 학습 주기 산출 근거
+
+570km LEO 궤도의 특성:
+
+| 요소 | 값 | 의미 |
+|------|-----|------|
+| 궤도 주기 T | 5,760초 (96분) | 1바퀴 돌아오는 시간 |
+| 궤도당 경도 이동 | ~22.5° | 지구 자전으로 인한 ground track 서쪽 이동 |
+| 동일 지역 완전 재방문 | ~15 궤도 (~24시간) | ground track이 거의 반복되는 시점 |
+
+학습 트리거는 다음과 같이 정의한다:
+
+```
+OBSERVATION_INTERVAL_SEC = ORBIT_PERIOD_SEC × REVISIT_ORBITS
+```
+
+**REVISIT_ORBITS = 3**으로 설정한 근거:
+- 3 궤도 동안 약 **67.5°의 경도 범위**를 커버 (22.5° × 3)
+- 단일 위성이 지리적으로 다양한 데이터를 수집하는 구간
+- 동일 지역 완전 재방문(15 궤도)까지 가지 않고, 부분 재방문 + 새 관측 영역의 균형
+- 절대값으로 4.8시간 ≈ 관측 위성의 일반적 downlink/처리 주기와 부합
+
+#### 구현
 
 ```python
 # 각 Worker별로 독립적 스케줄
@@ -207,18 +231,29 @@ for sat_id in worker_sat_ids:
     t = offset
     while t < 7일:
         events.append((start + t초, TRAIN_COMPLETE))
-        interval = 14400 + random(-3600, +3600)  # 4시간 ± 1시간
+        interval = 17280 + random(-5760, +5760)  # 3궤도 ± 1궤도
         t += max(interval, 1800)                  # 최소 30분 간격
 ```
 
 | 파라미터 | 값 | 의미 |
 |----------|-----|------|
-| `OBSERVATION_INTERVAL_SEC` | 14,400초 (4시간) | 평균 학습 간격 |
-| `OBSERVATION_JITTER_SEC` | 3,600초 (±1시간) | 랜덤 지터 |
+| `REVISIT_ORBITS` | 3 | 재방문 궤도 수 (학습 주기) |
+| `OBSERVATION_INTERVAL_SEC` | 17,280초 (4.8시간) | 평균 학습 간격 = T × 3 |
+| `OBSERVATION_JITTER_ORBITS` | 1 | 지터 범위 |
+| `OBSERVATION_JITTER_SEC` | 5,760초 (±96분) | 랜덤 지터 = T × 1 |
 | 최소 간격 | 1,800초 (30분) | 지터로 인한 과도한 밀집 방지 |
-| 초기 오프셋 | random(0, 4시간) | Worker 간 시간 분산 |
 
-7일 시뮬레이션에서 Worker당 약 10~14회 학습 → 총 약 2,300~3,300 학습 이벤트.
+7일 시뮬레이션에서 Worker당 약 30~40회 학습 (24h × 7 / 4.8h ≈ 35) → 총 약 7,000~9,400 학습 이벤트.
+
+#### 민감도 분석 여지
+
+`REVISIT_ORBITS` 변경으로 학습 빈도를 쉽게 조정할 수 있다:
+
+| REVISIT_ORBITS | 학습 주기 | 시나리오 |
+|----------------|----------|---------|
+| 1 | 96분 | SSA 중심, 고빈도 관측 |
+| 3 | 4.8시간 | **기본값 (중간)** |
+| 15 | 24시간 | 동일 지역 재방문 기준 |
 
 ---
 
@@ -436,9 +471,9 @@ A의 가중치는 10/15, B는 5/15로 기여 비례 평균을 낸다.
 | | SAMPLES_PER_CLIENT | 2,000 | 위성당 데이터 |
 | **집계** | BUFFER_MIN_SIZE | 3 | 최소 flush 크기 |
 | | BUFFER_MAX_SIZE | 15 | 강제 flush 상한 |
-| | BUFFER_MIN_DIVERSITY | 2 | 최소 면 다양성 |
+| | BUFFER_MIN_DIVERSITY | 1 | 최소 면 다양성 |
 | | BUFFER_TIMEOUT_SEC | 3,600 | 타임아웃 (1시간) |
-| | SERVER_LR | 0.7 | η_g (글로벌 30% 보존) |
+| | SERVER_LR | 0.5 | η_g (글로벌 50% 보존) |
 | | SERVER_MOMENTUM | 0.0 | β (모멘텀 비활성화) |
 | **동기화** | SYNC_AFTER_FLUSH | True | flush 후 즉시 동기화 |
 | **평가** | EVAL_EVERY_N_ROUNDS | 5 | 평가 주기 |

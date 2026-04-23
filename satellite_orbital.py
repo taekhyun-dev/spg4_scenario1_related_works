@@ -371,19 +371,22 @@ class OrbitalFLManager:
 
     def _flush_master(self, master_id: int, temp_model, current_time: datetime,
                       force_eval: bool = False):
-        """Master 로컬 집계 (FedPDA pseudo-gradient 방식)"""
+        """
+        Tier 1: Master 로컬 집계 (FedPDA pseudo-gradient 방식).
+        결과를 master_local_models에만 저장하고 글로벌 모델은 건드리지 않는다.
+        글로벌 업데이트는 _sync_masters에서 수행된다.
+        """
         buffer = self.master_buffers[master_id]
         if not buffer:
             return
 
-        self.aggregation_round += 1
         K = len(buffer)
         participating_ids = [e["sat_id"] for e in buffer]
         plane_counts = Counter(e["plane_id"] for e in buffer)
         unique_planes = len(plane_counts)
 
         self.sim_logger.info(
-            f"\n⚡ [Master SAT_{master_id} Round #{self.aggregation_round}] "
+            f"\n⚡ [Tier 1 Flush - Master SAT_{master_id}] "
             f"K={K}, planes={unique_planes}: {participating_ids}"
         )
 
@@ -407,7 +410,7 @@ class OrbitalFLManager:
                 delta += nw * pseudo_grad
             delta_avg[key] = delta
 
-        # 글로벌 모델 업데이트: w_new = w_global - η_g × Δ
+        # Master 로컬 집계 결과: w_local = w_global - η_g × Δ
         new_sd = OrderedDict()
         for key in global_sd.keys():
             if not global_sd[key].is_floating_point():
@@ -420,10 +423,11 @@ class OrbitalFLManager:
                 new_sd[key] = global_sd[key].clone()
 
         self.sim_logger.info(
-            f"   📐 η_g={eta_g} (retention={((1-eta_g)*100):.0f}%), K={K}"
+            f"   📐 η_g={eta_g} (retention={((1-eta_g)*100):.0f}%), K={K} "
+            f"→ Master 로컬 모델만 저장 (글로벌 미변경)"
         )
 
-        # Master 로컬 모델 저장 (동기화용)
+        # Master 로컬 모델 저장 (Sync 대기 중)
         self.master_local_models[master_id] = new_sd
         self.master_contribution_count[master_id] = K
 
@@ -432,14 +436,7 @@ class OrbitalFLManager:
         self.stats["flush_sizes"].append(K)
         self.stats["planes_per_flush"].append(unique_planes)
 
-        # 평가
-        new_version = round(self.global_model_wrapper.version + 1.0, 1)
-        self._update_global_and_evaluate(
-            new_sd, new_version, participating_ids, temp_model,
-            force_eval=force_eval, current_time=current_time
-        )
-
-        # 버퍼 클리어
+        # 참여한 Worker의 학습 플래그 리셋 (다음 라운드 글로벌 모델 대기)
         for e in buffer:
             self.satellite_last_trained_version[e["sat_id"]] = -1.0
         self.master_buffers[master_id] = []
@@ -450,48 +447,62 @@ class OrbitalFLManager:
 
     def _sync_masters(self, temp_model, current_time: datetime, force_eval: bool = False):
         """
-        Master 간 글로벌 모델 동기화.
-        각 Master의 로컬 집계 모델을 가중 평균하여 새 글로벌 모델 생성.
-        실제 경로: 인접 면 릴레이 (Master 직접 ISL 불가).
-        동기화 지연은 이벤트 스케줄링에서 반영.
+        Tier 2: Master 간 글로벌 모델 동기화 + 글로벌 업데이트.
+          - 활성 Master 1개: 해당 Master 로컬 모델을 그대로 글로벌로 승격
+          - 활성 Master ≥2개: 기여 수 가중 평균으로 글로벌 모델 생성
+        실제 경로: 인접 면 Worker 릴레이 (Master 직접 ISL 불가, 동기화 지연은 이벤트 스케줄링에서 반영).
         """
-        # 집계 참여한 Master만 수집
         active_masters = {
             m: sd for m, sd in self.master_local_models.items() if sd is not None
         }
 
-        if len(active_masters) <= 1:
-            # Master 1개만 활성 → 동기화 불필요 (이미 flush에서 글로벌 업데이트 완료)
-            self.sim_logger.info(f"   🔄 동기화 생략 (활성 Master {len(active_masters)}개)")
+        if len(active_masters) == 0:
+            self.sim_logger.info("   🔄 동기화할 활성 Master 없음 (이미 Sync 됨)")
             return
 
-        self.sim_logger.info(
-            f"\n🔄 [Master Sync] {len(active_masters)}개 Master 동기화 시작"
-        )
+        self.aggregation_round += 1
 
-        # 가중 평균 (각 Master의 기여 모델 수로 가중)
-        total_contributions = sum(
-            self.master_contribution_count[m] for m in active_masters
-        )
-        if total_contributions == 0:
-            total_contributions = len(active_masters)
+        if len(active_masters) == 1:
+            # 단일 Master → 그대로 글로벌로 승격 (가중 평균 불필요)
+            m_id, synced_sd = next(iter(active_masters.items()))
+            K = self.master_contribution_count[m_id]
+            participants = [m_id]
+            self.sim_logger.info(
+                f"\n🔄 [Tier 2 Sync Round #{self.aggregation_round}] "
+                f"Master SAT_{m_id} 단독 승격 (K={K})"
+            )
+        else:
+            # 다중 Master → 기여 수 가중 평균
+            total_contributions = sum(
+                self.master_contribution_count[m] for m in active_masters
+            ) or len(active_masters)
 
-        global_sd = self.global_model_wrapper.model_state_dict
-        synced_sd = OrderedDict()
-        for key in global_sd.keys():
-            if not global_sd[key].is_floating_point():
-                synced_sd[key] = global_sd[key].clone()
-                continue
-            weighted_sum = torch.zeros_like(global_sd[key], dtype=torch.float32)
-            for m_id, m_sd in active_masters.items():
-                w = self.master_contribution_count[m_id] / total_contributions
-                weighted_sum += w * m_sd[key].float()
-            synced_sd[key] = weighted_sum.to(global_sd[key].dtype).cpu()
+            global_sd = self.global_model_wrapper.model_state_dict
+            synced_sd = OrderedDict()
+            for key in global_sd.keys():
+                if not global_sd[key].is_floating_point():
+                    synced_sd[key] = global_sd[key].clone()
+                    continue
+                weighted_sum = torch.zeros_like(global_sd[key], dtype=torch.float32)
+                for m_id, m_sd in active_masters.items():
+                    w = self.master_contribution_count[m_id] / total_contributions
+                    weighted_sum += w * m_sd[key].float()
+                synced_sd[key] = weighted_sum.to(global_sd[key].dtype).cpu()
 
-        # 글로벌 모델 업데이트
+            participants = list(active_masters.keys())
+            weights_str = ", ".join(
+                f"SAT_{m}:{self.master_contribution_count[m]}"
+                for m in active_masters
+            )
+            self.sim_logger.info(
+                f"\n🔄 [Tier 2 Sync Round #{self.aggregation_round}] "
+                f"{len(active_masters)}개 Master 가중 평균: {weights_str}"
+            )
+
+        # 글로벌 모델 업데이트 + 평가
         new_version = round(self.global_model_wrapper.version + 1.0, 1)
         self._update_global_and_evaluate(
-            synced_sd, new_version, list(active_masters.keys()), temp_model,
+            synced_sd, new_version, participants, temp_model,
             force_eval=force_eval, current_time=current_time
         )
 
@@ -502,7 +513,7 @@ class OrbitalFLManager:
 
         self.stats["total_syncs"] += 1
         self.sim_logger.info(
-            f"   ✅ 동기화 완료 (v{new_version}, {len(active_masters)} Masters)"
+            f"   ✅ 글로벌 v{new_version} 확정 ({len(active_masters)} Masters 반영)"
         )
 
     # ================================================================
