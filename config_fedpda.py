@@ -14,7 +14,10 @@ import os
 from datetime import datetime, timedelta, timezone
 
 # === 전략 선택 ===
-AGGREGATION_STRATEGY = "fedpda"
+# 환경변수 ORBITAL_FL_STRATEGY로 오버라이드 가능 (병렬 실행 시 필수)
+#   사용 예: ORBITAL_FL_STRATEGY=fedbuff python satellite_fedpda_isl.py
+# 유효 값: fedasync, fedbuff, fedspace, fedorbit, fedpda
+AGGREGATION_STRATEGY = os.environ.get("ORBITAL_FL_STRATEGY", "fedpda")
 
 # === Constellation ===
 NUM_PLANES = 17

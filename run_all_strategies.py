@@ -1,36 +1,25 @@
 #!/usr/bin/env python3
 # run_all_strategies.py
 # ============================================================
-# 4개 비동기 FL 전략을 순차 실행하는 러너
-# config.py의 AGGREGATION_STRATEGY를 자동으로 전환하며 실행
+# 5개 비동기 FL 전략을 순차 실행하는 러너
+# 환경변수 ORBITAL_FL_STRATEGY로 전략을 subprocess에 전달
+# (이전 버전과 달리 config 파일을 수정하지 않음 → 병렬 실행 안전)
 #
 # 사용법:
-#   python run_all_strategies.py              # 4개 전부
+#   python run_all_strategies.py              # 5개 전부
 #   python run_all_strategies.py fedbuff fedorbit  # 지정 전략만
+#   ORBITAL_FL_SEED=123 ORBITAL_FL_ALPHA=0.5 python run_all_strategies.py
 # ============================================================
 
+import os
 import subprocess
 import sys
 import time
-import re
 from datetime import datetime, timedelta
 from pathlib import Path
 
 STRATEGIES = ["fedasync", "fedbuff", "fedspace", "fedorbit", "fedpda"]
-CONFIG_PATH = Path("config_fedpda.py")
 SATELLITE_SCRIPT = "satellite_fedpda_isl.py"  # 실행할 메인 스크립트 경로
-
-
-def set_strategy(strategy: str):
-    """config.py의 AGGREGATION_STRATEGY 값을 교체"""
-    text = CONFIG_PATH.read_text()
-    text = re.sub(
-        r'^AGGREGATION_STRATEGY\s*=\s*".*?"',
-        f'AGGREGATION_STRATEGY = "{strategy}"',
-        text,
-        flags=re.MULTILINE
-    )
-    CONFIG_PATH.write_text(text)
 
 
 def format_elapsed(seconds: float) -> str:
@@ -42,16 +31,18 @@ def format_elapsed(seconds: float) -> str:
 
 
 def run_strategy(strategy: str) -> dict:
-    """단일 전략 실행 후 결과 반환"""
-    set_strategy(strategy)
-
+    """단일 전략 실행 후 결과 반환 (전략을 env var로 전달)"""
     print(f"\n{'='*60}")
     print(f"  [{strategy.upper()}] 시작 — {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'='*60}\n")
 
+    # env var로 전략 + 부모의 모든 env (SEED, ALPHA 등) 전달
+    env = {**os.environ, "ORBITAL_FL_STRATEGY": strategy}
+
     t0 = time.time()
     result = subprocess.run(
         [sys.executable, SATELLITE_SCRIPT],
+        env=env,
         capture_output=False,  # 실시간 출력
     )
     elapsed = time.time() - t0

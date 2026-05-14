@@ -1237,10 +1237,13 @@ class Satellite_Manager:
 
         # ── 메트릭 저장 및 출력 ──
         self.metrics.print_summary(len(self.satellites), logger=self.sim_logger)
-        # 시드 + alpha별 결과 디렉토리 분리
-        results_dir = f"./results/fedpda_S{SEED}_{ALPHA_TAG}"
+        # 전략 + 시드 + alpha별 결과 디렉토리 분리
+        results_dir = f"./results/{self.strategy}_S{SEED}_{ALPHA_TAG}"
         saved = self.metrics.save(output_dir=results_dir)
-        self.sim_logger.info(f"📁 결과 저장: {saved} (SEED={SEED}, α={DIRICHLET_ALPHA})")
+        self.sim_logger.info(
+            f"📁 결과 저장: {saved} "
+            f"(strategy={self.strategy}, SEED={SEED}, α={DIRICHLET_ALPHA})"
+        )
 
         self.sim_logger.info(f"\n=== 시뮬레이션 종료 [{self.strategy.upper()}] ===")
         self.sim_logger.info(f"Total Aggregation Rounds: {self.aggregation_round}")
@@ -1288,12 +1291,12 @@ def main():
         end_time = start_time + duration
 
         sim_logger, perf_logger = setup_loggers(
-            log_dir=f"logs/fedpda_S{SEED}_{ALPHA_TAG}",
+            log_dir=f"logs/{AGGREGATION_STRATEGY}_S{SEED}_{ALPHA_TAG}",
             suffix=f"_S{SEED}_{ALPHA_TAG}",
         )
         sim_logger.info(f"시뮬레이션 시간: {start_time.isoformat()} ~ {end_time.isoformat()}")
         sim_logger.info(f"(TLE epoch 기반, {SIM_DURATION_DAYS}일간)")
-        sim_logger.info(f"🎲 SEED={SEED}, α={DIRICHLET_ALPHA}")
+        sim_logger.info(f"🎲 strategy={AGGREGATION_STRATEGY}, SEED={SEED}, α={DIRICHLET_ALPHA}")
 
         sat_manager = Satellite_Manager(start_time, end_time, sim_logger, perf_logger)
         asyncio.run(sat_manager.run())
