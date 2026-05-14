@@ -96,6 +96,27 @@ def compute_sync_delay() -> float:
     return rounds * spacing * ISL_HOP_TIME_SEC
 
 # ================================================================
+# 시드 전역 적용
+# ================================================================
+
+def set_global_seed(seed: int):
+    """
+    모든 random source에 시드 고정 (재현성 확보).
+    - Python random
+    - NumPy (Dirichlet 데이터 분할 포함)
+    - PyTorch (모델 초기화, 학습)
+    - CUDA (있는 경우)
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+
+# ================================================================
 # 이벤트 타입
 # ================================================================
 EVT_TRAIN_COMPLETE = "TRAIN_COMPLETE"
@@ -113,6 +134,10 @@ class OrbitalFLManager:
         self.end_time = SIM_START_TIME + timedelta(days=SIM_DURATION_DAYS)
         self.sim_logger = sim_logger
         self.perf_logger = perf_logger
+
+        # 시드 전역 적용 (재현성 확보)
+        set_global_seed(SEED)
+        self.sim_logger.info(f"🎲 Global seed set: SEED={SEED}")
 
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.sim_logger.info(f"Device: {self.device}")
@@ -735,9 +760,9 @@ class OrbitalFLManager:
         self.sim_logger.info(f"    동기화 지연: {self.sync_delay:.1f}초")
         self.sim_logger.info(f"    경로: ring relay (인접 면 경유, {math.ceil(NUM_MASTERS/2)}라운드)")
 
-        # 메트릭 저장 (NUM_MASTERS별로 분리)
+        # 메트릭 저장 (NUM_MASTERS, SEED별로 분리)
         self.metrics.print_summary(TOTAL_SATS, logger=self.sim_logger)
-        results_dir = Path(f"results/orbital_fl_M{NUM_MASTERS}")
+        results_dir = Path(f"results/orbital_fl_M{NUM_MASTERS}_S{SEED}")
         results_dir.mkdir(parents=True, exist_ok=True)
         self.metrics.save(str(results_dir))
         self.sim_logger.info(f"\n  결과 저장: {results_dir}/")
@@ -749,7 +774,7 @@ class OrbitalFLManager:
 # ================================================================
 
 async def main():
-    log_dir = Path(f"logs/orbital_fl_M{NUM_MASTERS}")
+    log_dir = Path(f"logs/orbital_fl_M{NUM_MASTERS}_S{SEED}")
     log_dir.mkdir(parents=True, exist_ok=True)
     sim_logger, perf_logger = setup_loggers(
         sim_log_path=str(log_dir / "simulation.log"),

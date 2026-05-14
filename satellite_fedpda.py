@@ -58,7 +58,10 @@ from ml.training import train_model
 from ml.aggregation import weighted_update
 from ml.metrics import MetricsCollector
 
-SEED = 42
+# 환경변수로 시드 오버라이드 가능
+#   사용 예: ORBITAL_FL_SEED=123 python satellite_fedpda.py
+import os
+SEED = int(os.environ.get("ORBITAL_FL_SEED", 42))
 
 class Satellite_Manager:
     """
@@ -1232,8 +1235,10 @@ class Satellite_Manager:
 
         # ── 메트릭 저장 및 출력 ──
         self.metrics.print_summary(len(self.satellites), logger=self.sim_logger)
-        saved = self.metrics.save()
-        self.sim_logger.info(f"📁 결과 저장: {saved}")
+        # 시드별 결과 디렉토리 분리
+        results_dir = f"./results/fedpda_S{SEED}"
+        saved = self.metrics.save(output_dir=results_dir)
+        self.sim_logger.info(f"📁 결과 저장: {saved} (SEED={SEED})")
 
         self.sim_logger.info(f"\n=== 시뮬레이션 종료 [{self.strategy.upper()}] ===")
         self.sim_logger.info(f"Total Aggregation Rounds: {self.aggregation_round}")
@@ -1280,9 +1285,13 @@ def main():
         duration = timedelta(days=SIM_DURATION_DAYS)
         end_time = start_time + duration
 
-        sim_logger, perf_logger = setup_loggers()
+        sim_logger, perf_logger = setup_loggers(
+            log_dir=f"logs/fedpda_S{SEED}",
+            suffix=f"_S{SEED}",
+        )
         sim_logger.info(f"시뮬레이션 시간: {start_time.isoformat()} ~ {end_time.isoformat()}")
         sim_logger.info(f"(TLE epoch 기반, {SIM_DURATION_DAYS}일간)")
+        sim_logger.info(f"🎲 SEED={SEED}")
 
         sat_manager = Satellite_Manager(start_time, end_time, sim_logger, perf_logger)
         asyncio.run(sat_manager.run())

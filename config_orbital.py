@@ -77,4 +77,7 @@ EVAL_EVERY_N_ROUNDS = 5
 STALENESS_THRESHOLD = 5.0
 
 # === 시드 ===
-SEED = 42
+# 환경변수 ORBITAL_FL_SEED로 오버라이드 가능
+#   사용 예: ORBITAL_FL_SEED=123 python satellite_orbital.py
+import os
+SEED = int(os.environ.get("ORBITAL_FL_SEED", 42))

@@ -17,12 +17,18 @@ class KSTFormatter(logging.Formatter):
             s = self.default_msec_format % (t, record.msecs)
         return s
 
-def setup_loggers():
-    """시뮬레이션 및 성능 로그를 설정하고 로거 객체를 반환"""
+def setup_loggers(log_dir: str = "logs/fedpda_isl", suffix: str = ""):
+    """
+    시뮬레이션 및 성능 로그를 설정하고 로거 객체를 반환.
+
+    Args:
+        log_dir: 로그 저장 디렉토리 (기본: logs/fedpda_isl)
+        suffix: 파일명 끝에 추가할 접미사 (예: '_S42')
+    """
     # 로그 파일 이름에 타임스탬프 추가 (KST 기준)
     timestamp = datetime.now(KST).strftime("%Y%m%d_%H%M%S")
-    log_dir = Path("logs/fedpda_isl")
-    log_dir.mkdir(exist_ok=True)
+    log_dir = Path(log_dir)
+    log_dir.mkdir(parents=True, exist_ok=True)
 
     # --- 일반 시뮬레이션 로거 설정 ---
     sim_logger = logging.getLogger("simulation")
@@ -33,7 +39,7 @@ def setup_loggers():
     sim_logger.setLevel(logging.INFO)
     
     # 파일 핸들러
-    sim_handler = logging.FileHandler(log_dir / f"simulation_{timestamp}.log", mode='w')
+    sim_handler = logging.FileHandler(log_dir / f"simulation_{timestamp}{suffix}.log", mode='w')
     sim_formatter = KSTFormatter('%(asctime)s - %(message)s', '%Y-%m-%d %H:%M:%S')
     sim_handler.setFormatter(sim_formatter)
     sim_logger.addHandler(sim_handler)
@@ -50,7 +56,7 @@ def setup_loggers():
         
     perf_logger.setLevel(logging.INFO)
 
-    perf_handler = logging.FileHandler(log_dir / f"performance_{timestamp}.csv", mode='w')
+    perf_handler = logging.FileHandler(log_dir / f"performance_{timestamp}{suffix}.csv", mode='w')
     perf_formatter = KSTFormatter('%(asctime)s - %(message)s', '%Y-%m-%d %H:%M:%S')
     
     # CSV 헤더 작성

@@ -16,13 +16,32 @@ ISL(Inter-Satellite Link)은 **모든 모델 전달의 유일한 채널**이다.
 
 ### 1.2 기존 FedPDA+ISL과의 차이
 
+두 시스템 모두 인접 궤도면 간 ISL이 상시 가능하다고 가정하지만,
+**문제 구조 자체가 다르기 때문에** 알고리즘이 근본적으로 다르다.
+
 | 항목 | 기존 FedPDA+ISL (GS 기반) | 본 프로젝트 (Orbital) |
 |------|--------------------------|---------------------|
-| 릴레이 목적지 | GS 접촉 가능 위성 | Master 위성 |
-| 경로 결정 방식 | Greedy hop-by-hop (동적 최적화) | 정적 최단 경로 |
-| 이득 판정 | 접촉 시간 단축 ≥ 300초 시에만 사용 | 무조건 사용 (상시 연결) |
-| 전달 지연 | 확률적 (GS 접촉 대기) | 확정적 (홉 × 7.1초) |
-| 릴레이 실패 | 가능 (이득 < 임계값) | 없음 |
+| ISL 가용성 | 인접 면 상시 가능 | 인접 면 상시 가능 (동일) |
+| 릴레이 목적지 | **GS 접촉이 가장 빠른 위성** (동적) | **담당 Master 위성** (정적) |
+| 경로 결정 방식 | Greedy hop-by-hop | 정적 최단 경로 |
+| 핵심 비교 | "내 GS 대기 시간" vs "ISL 홉 + 다른 위성 GS 대기" | "Master까지 최단 홉 시간" |
+| 이득 판정 | `gain > 0`이면 릴레이 사용 ¹ | 해당 개념 없음 (무조건 최단 경로) |
+| 전달 지연 | 확률적 (GS 접촉 대기 포함) | 확정적 (홉 × 7.1초) |
+| 릴레이 실패 | 가능 (gain ≤ 0인 경우) | 없음 |
+
+¹ 기존 코드의 `FEDPDA_ISL_MIN_GAIN_SEC = 300`은 수학적 근거가 없는 보수적 필터로
+판단되어 **0으로 수정됨**. relay_wait에 이미 ISL 비용이 반영되어 있으므로
+gain > 0이면 릴레이가 항상 이득이다.
+
+### 1.3 두 알고리즘이 근본적으로 다른 이유
+
+| 전제 | FedPDA+ISL | Orbital FL |
+|------|-----------|-----------|
+| 목적지가 동적으로 바뀌는가 | ✅ GS 접촉 스케줄에 따라 | ❌ Master 고정 |
+| 홉 수를 늘려서 이득이 가능한가 | ✅ 다른 위성이 더 빨리 GS 접촉 가능 | ❌ 최단 경로가 항상 최적 |
+| 릴레이를 안 쓰는 선택지가 있는가 | ✅ 직접 GS 대기 가능 | ❌ ISL이 유일한 채널 |
+
+→ Orbital FL에서는 **선택의 여지가 없으므로** Greedy 탐색이 불필요하다.
 
 ---
 
@@ -220,10 +239,15 @@ p95 전달 지연:  56.8초
 
 ### 5.1 설계 제약
 
-**Master 간 직접 ISL은 불가능**하다. 왜냐하면:
-- Master들은 서로 다른 궤도면에 있음 (P0, P4, P8, P12)
+**N ≥ 2인 경우, Master 간 직접 ISL은 불가능**하다:
+- Master들은 서로 다른 궤도면에 있음 (예: N=4 → P0, P4, P8, P12)
 - 본 프로젝트는 **인접 면 간 ISL만 가능**으로 가정
-- Master P0 ↔ Master P4는 3면 떨어져 있어 직접 링크 불가
+- 예: Master P0 ↔ Master P4는 3면 떨어져 있어 직접 링크 불가
+
+**N = 1인 경우**, 동기화 자체가 불필요하다 (Master가 1개뿐):
+- `compute_sync_delay()`가 0을 반환
+- Master flush 결과가 즉시 글로벌 모델로 승격
+- `_sync_masters()`가 호출되지만 단일 Master 승격 처리
 
 ### 5.2 릴레이 경로
 
@@ -263,10 +287,23 @@ spacing = NUM_PLANES / NUM_MASTERS = 17 / 4 = 4.25
 
 ```python
 def compute_sync_delay():
+    if NUM_MASTERS <= 1:
+        return 0.0  # N=1 특례: 동기화 대상이 없으므로 0
     rounds = math.ceil(NUM_MASTERS / 2)       # 2
     spacing = NUM_PLANES / NUM_MASTERS         # 4.25
     return rounds * spacing * ISL_HOP_TIME_SEC # 2 × 4.25 × 7.1 = 60.3초
 ```
+
+| NUM_MASTERS | rounds | spacing | sync_delay |
+|-------------|--------|---------|-----------|
+| **1** | — | — | **0초** (특례) |
+| 2 | 1 | 8.5 | 60.4초 |
+| **4** | 2 | 4.25 | **60.3초** (현재 기본값) |
+| 6 | 3 | 2.83 | 60.4초 |
+| 17 | 9 | 1.0 | 63.9초 |
+
+흥미로운 점: Master 수와 무관하게 sync_delay가 거의 일정하다.
+이는 `(N/2) × (17/N) = 17/2 = 8.5`로 N이 상쇄되기 때문이다.
 
 ### 5.4 동기화 타임라인
 
@@ -298,15 +335,39 @@ Worker 학습 완료
     ↓
 Master 버퍼 집계 (flush 조건 충족 시)
     ↓
-[Tier 2] Master 간 ring 동기화 (60.3초 지연)
+[Tier 2] Master 간 ring 동기화 (sync_delay 후)
     ↓
 글로벌 모델 v+1.0 확정
 ```
 
-**총 E2E (이론값, 234 Worker 평균):**
+### 6.1 NUM_MASTERS별 E2E 비교
+
+| 항목 | NUM_MASTERS = 1 | NUM_MASTERS = 4 |
+|------|-----------------|-----------------|
+| Worker 수 | 237 | 234 |
+| 최대 inter-plane 홉 | 8홉 | 3홉 |
+| avg 전달 지연 | **55.2초** | 32.9초 |
+| p95 전달 지연 | 92.3초 | 56.8초 |
+| max 전달 지연 | **106.5초** | 63.9초 |
+| 동기화 지연 | 0초 (불필요) | 60.3초 |
+| **총 E2E (avg)** | **55.2초** | **93.2초** |
+| 통신 부하 분산 | ✗ (1개 위성에 집중) | ✓ |
+| SPOF | ✓ (단일 장애점) | ✗ |
+
+**관찰**:
+- N=1이 평균 E2E는 빠르지만 (55.2 < 93.2초), max 전달은 더 오래 걸린다 (106.5 > 63.9초).
+- N=1은 동기화 비용이 없는 대신 worst-case worker가 더 멀리 떨어져 있다.
+- 정확도 비교는 실제 시뮬레이션 실행으로 확인 필요.
+
+### 6.2 결과 디렉토리 분리
+
+NUM_MASTERS별로 출력 경로가 자동 분리되어 비교 실험 가능:
 
 ```
-avg_delivery (32.9초) + sync_delay (60.3초) = 93.2초
+results/orbital_fl_M1/    ← NUM_MASTERS=1 결과
+results/orbital_fl_M4/    ← NUM_MASTERS=4 결과
+logs/orbital_fl_M1/
+logs/orbital_fl_M4/
 ```
 
 ---
@@ -316,14 +377,17 @@ avg_delivery (32.9초) + sync_delay (60.3초) = 93.2초
 | 기능 | 함수 / 상수 | 파일 |
 |------|-------------|------|
 | ISL 홉 시간 상수 | `ISL_HOP_TIME_SEC = 7.1` | `config_orbital.py` |
-| Master 배치 | `MASTER_PLANES`, `MASTER_SAT_IDS` | `config_orbital.py` |
+| Master 수 | `NUM_MASTERS` (현재 4) | `config_orbital.py` |
+| Master 배치 | `MASTER_PLANES`, `MASTER_SAT_IDS` (자동 계산) | `config_orbital.py` |
 | 가장 가까운 Master 탐색 | `find_nearest_master()` | `satellite_orbital.py` |
 | Worker → Master 전달 지연 | `compute_delivery_delay()` | `satellite_orbital.py` |
-| Master 간 동기화 지연 | `compute_sync_delay()` | `satellite_orbital.py` |
+| Master 간 동기화 지연 (N=1 특례 포함) | `compute_sync_delay()` | `satellite_orbital.py` |
 | 학습 이벤트 생성 | `_generate_training_events()` | `satellite_orbital.py` |
 | 이벤트 큐 (heapq) | `run()` 메서드 내 | `satellite_orbital.py` |
-| Master 버퍼 집계 | `_flush_master()` | `satellite_orbital.py` |
-| Master 간 동기화 | `_sync_masters()` | `satellite_orbital.py` |
+| Master 버퍼 집계 (Tier 1) | `_flush_master()` | `satellite_orbital.py` |
+| Master 간 동기화 (Tier 2) | `_sync_masters()` | `satellite_orbital.py` |
+| 결과 출력 경로 | `results/orbital_fl_M{N}/` | `_print_summary()` |
+| 로그 출력 경로 | `logs/orbital_fl_M{N}/` | `main()` |
 
 ---
 
@@ -408,11 +472,23 @@ avg_delivery (32.9초) + sync_delay (60.3초) = 93.2초
 
 1. **홉 시간 상수** 7.1초 (SGP4 실측)
 2. **Worker → Master**: `(inter_hops + intra_hops) × 7.1초`
-3. **Master → Master**: `⌈N/2⌉ × (NUM_PLANES/N) × 7.1초 = 60.3초`
+3. **Master → Master**: `⌈N/2⌉ × (NUM_PLANES/N) × 7.1초` (N=1이면 0)
 4. **이벤트 기반 스케줄링**: TRAIN_COMPLETE → MODEL_DELIVERED → MASTER_SYNC
 
-기존 GS 기반 FedPDA+ISL의 greedy hop-by-hop 경로 최적화는 **제거**되었다.
-이유는 GS 접촉 대기라는 병목이 사라져서 동적 최적화의 이득이 없기 때문이다.
-ISL이 상시 연결이므로 최단 경로로 즉시 전달하는 것이 항상 최적이다.
+### 기존 FedPDA+ISL과의 본질적 차이
 
-평균 E2E 지연 **93.2초**로 Worker 학습 완료부터 글로벌 모델 확정까지 수렴한다.
+두 시스템 모두 인접 면 ISL 상시 가능을 가정하지만, **문제 구조가 다르다**:
+- FedPDA+ISL: GS 접촉이 동적 목적지 → Greedy 탐색 필요
+- Orbital FL: Master가 정적 목적지 → 최단 경로가 항상 최적
+
+따라서 Orbital FL은 Greedy hop-by-hop 알고리즘을 **사용하지 않는다**.
+
+### 핵심 수치
+
+| 시나리오 | 평균 E2E |
+|---------|---------|
+| NUM_MASTERS = 1 | **55.2초** (sync 불필요) |
+| NUM_MASTERS = 4 | **93.2초** (sync 60.3초 포함) |
+
+NUM_MASTERS는 `config_orbital.py`에서 변경 가능하며, 결과는 자동으로
+`results/orbital_fl_M{N}/` 경로에 분리되어 저장된다.
