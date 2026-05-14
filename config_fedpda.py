@@ -10,6 +10,7 @@
 #   "fedorbit"  : FedOrbit  (Jabbarpour et al., 2024)
 #   "fedpda"    : FedPDA    (Proposed)
 # ============================================================
+import os
 from datetime import datetime, timedelta, timezone
 
 # === 전략 선택 ===
@@ -78,7 +79,11 @@ GS_FLYOVER_THRESHOLD_DEG = 10.0
 
 # === 공통: 데이터 ===
 NUM_CLIENTS = 238               # 위성 수와 동일
-DIRICHLET_ALPHA = 0.5           # 0.5 = moderate, 0.1 = severe Non-IID
+# 환경변수 ORBITAL_FL_ALPHA로 오버라이드 가능
+DIRICHLET_ALPHA = float(os.environ.get("ORBITAL_FL_ALPHA", 0.5))  # 0.5=moderate, 0.1=severe
+
+# Alpha 태그 (출력 경로용): 0.1 → A01, 0.5 → A05
+ALPHA_TAG = f"A{int(DIRICHLET_ALPHA * 10):02d}"
 BATCH_SIZE = 128
 SAMPLES_PER_CLIENT = 2000       # 위성당 학습 데이터 수
 

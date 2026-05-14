@@ -6,6 +6,7 @@
 #   - 4 Master (Plane 0, 4, 8, 12)
 #   - 234 Worker
 # ============================================================
+import os
 from datetime import datetime, timezone
 
 # === Constellation ===
@@ -53,7 +54,8 @@ MIN_LR = 0.001
 
 # === 데이터 ===
 NUM_CLIENTS = TOTAL_SATS                        # 238 (Worker+Master 모두 데이터 할당, Master는 학습 안함)
-DIRICHLET_ALPHA = 0.5                           # Non-IID 강도
+# 환경변수 ORBITAL_FL_ALPHA로 오버라이드 가능 (0.1=severe, 0.5=moderate)
+DIRICHLET_ALPHA = float(os.environ.get("ORBITAL_FL_ALPHA", 0.5))  # Non-IID 강도
 BATCH_SIZE = 128
 SAMPLES_PER_CLIENT = 2000
 
@@ -79,5 +81,7 @@ STALENESS_THRESHOLD = 5.0
 # === 시드 ===
 # 환경변수 ORBITAL_FL_SEED로 오버라이드 가능
 #   사용 예: ORBITAL_FL_SEED=123 python satellite_orbital.py
-import os
 SEED = int(os.environ.get("ORBITAL_FL_SEED", 42))
+
+# === Alpha 태그 (출력 경로용) ===
+ALPHA_TAG = f"A{int(DIRICHLET_ALPHA * 10):02d}"  # 0.1 → A01, 0.5 → A05

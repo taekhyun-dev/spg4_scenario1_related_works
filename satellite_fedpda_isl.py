@@ -49,6 +49,8 @@ from config_fedpda import (
     NUM_CLIENTS, DIRICHLET_ALPHA, BATCH_SIZE, SAMPLES_PER_CLIENT,
     # Simulation time
     SIM_START_TIME, SIM_DURATION_DAYS,
+    # Experiment tags
+    ALPHA_TAG,
 )
 
 from ml.data import get_cifar10_loaders
@@ -1206,10 +1208,10 @@ class Satellite_Manager:
             self._fedpda_isl_print_stats()
 
         self.metrics.print_summary(len(self.satellites), logger=self.sim_logger)
-        # 시드별 결과 디렉토리 분리
-        results_dir = f"./results/fedpda_isl_S{SEED}"
+        # 시드 + alpha별 결과 디렉토리 분리
+        results_dir = f"./results/fedpda_isl_S{SEED}_{ALPHA_TAG}"
         saved = self.metrics.save(output_dir=results_dir)
-        self.sim_logger.info(f"📁 결과 저장: {saved} (SEED={SEED})")
+        self.sim_logger.info(f"📁 결과 저장: {saved} (SEED={SEED}, α={DIRICHLET_ALPHA})")
         self.sim_logger.info(f"\n=== 시뮬레이션 종료 [{self.strategy.upper()}] ===")
         self.sim_logger.info(f"Total Aggregation Rounds: {self.aggregation_round}")
         self.sim_logger.info(f"Final Global Model Accuracy: {self.best_acc:.2f}%")
@@ -1245,11 +1247,11 @@ def main():
         duration = timedelta(days=SIM_DURATION_DAYS)
         end_time = start_time + duration
         sim_logger, perf_logger = setup_loggers(
-            log_dir=f"logs/fedpda_isl_S{SEED}",
-            suffix=f"_S{SEED}",
+            log_dir=f"logs/fedpda_isl_S{SEED}_{ALPHA_TAG}",
+            suffix=f"_S{SEED}_{ALPHA_TAG}",
         )
         sim_logger.info(f"시뮬레이션: {start_time.isoformat()} ~ {end_time.isoformat()}")
-        sim_logger.info(f"🎲 SEED={SEED}")
+        sim_logger.info(f"🎲 SEED={SEED}, α={DIRICHLET_ALPHA}")
         sat_manager = Satellite_Manager(start_time, end_time, sim_logger, perf_logger)
         asyncio.run(sat_manager.run())
     except KeyboardInterrupt:
