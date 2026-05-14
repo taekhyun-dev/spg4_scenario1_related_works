@@ -776,10 +776,11 @@ class OrbitalFLManager:
 async def main():
     log_dir = Path(f"logs/orbital_fl_M{NUM_MASTERS}_S{SEED}_{ALPHA_TAG}")
     log_dir.mkdir(parents=True, exist_ok=True)
-    sim_logger, perf_logger = setup_loggers(
-        sim_log_path=str(log_dir / "simulation.log"),
-        perf_log_path=str(log_dir / "performance.csv"),
-    )
+    # sim_logger, perf_logger = setup_loggers(
+    #     sim_log_path=str(log_dir / "simulation.log"),
+    #     perf_log_path=str(log_dir / "performance.csv"),
+    # )
+    sim_logger, perf_logger = setup_loggers(log_dir=log_dir)
 
     manager = OrbitalFLManager(sim_logger, perf_logger)
     await manager.run()

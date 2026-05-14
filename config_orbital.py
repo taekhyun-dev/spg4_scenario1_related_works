@@ -17,7 +17,7 @@ ORBIT_ALTITUDE_KM = 570
 ORBIT_PERIOD_SEC = 5760                         # ~96분
 
 # === Master 위성 배치 (Option A: 같은 궤도면, 동일 고도) ===
-NUM_MASTERS = 4
+NUM_MASTERS = 1
 # 균등 배치: int(i * 17/4) → Plane 0, 4, 8, 12
 MASTER_PLANES = [int(i * NUM_PLANES / NUM_MASTERS) for i in range(NUM_MASTERS)]
 # 각 면의 첫 번째 위성을 Master로 지정 (sat_id = plane * SATS_PER_PLANE)
@@ -65,7 +65,7 @@ BUFFER_MIN_SIZE = 3                             # flush 최소 버퍼
 BUFFER_MAX_SIZE = 15                            # 강제 flush 상한
 BUFFER_MIN_DIVERSITY = 1                        # flush 최소 궤도면 다양성 (1=다양성 제약 해제)
 BUFFER_TIMEOUT_SEC = 3600                       # 다양성 대기 timeout (1시간)
-SERVER_LR = 0.5                                 # η_g: 글로벌 50% 보존 + 로컬 50% 반영
+SERVER_LR = 0.37                                 # η_g: 글로벌 50% 보존 + 로컬 50% 반영
 SERVER_MOMENTUM = 0.0                           # β=0: 모멘텀 비활성화
 
 # === Master 간 동기화 ===

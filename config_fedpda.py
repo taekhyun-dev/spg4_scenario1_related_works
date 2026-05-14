@@ -56,7 +56,7 @@ FEDPDA_MIN_DIVERSITY = 2            # flush 최소 궤도면 다양성
 FEDPDA_MAX_BUFFER = 15              # 강제 flush 버퍼 상한
 FEDPDA_TIMEOUT_SEC = 1800           # 다양성 대기 timeout (s)
 FEDPDA_SERVER_MOMENTUM = 0.0        # β=0: 모멘텀 발산 방지
-FEDPDA_SERVER_LR = 0.7              # η_g=0.7: 글로벌 30% 보존 + 로컬 70% 반영
+FEDPDA_SERVER_LR = 0.37              # η_g=0.7: 글로벌 30% 보존 + 로컬 70% 반영
 
 # === FedPDA ISL Extension ===
 # ISL 비교 실험: True/False 전환으로 ISL 유무 비교

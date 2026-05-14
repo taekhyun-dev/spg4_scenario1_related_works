@@ -1289,7 +1289,6 @@ def main():
         
         duration = timedelta(days=SIM_DURATION_DAYS)
         end_time = start_time + duration
-
         sim_logger, perf_logger = setup_loggers(
             log_dir=f"logs/{AGGREGATION_STRATEGY}_S{SEED}_{ALPHA_TAG}",
             suffix=f"_S{SEED}_{ALPHA_TAG}",
