@@ -50,7 +50,7 @@ from config_fedpda import (
     # Simulation time
     SIM_START_TIME, SIM_DURATION_DAYS,
     # Experiment tags
-    ALPHA_TAG,
+    ALPHA_TAG, ETA_TAG,
 )
 
 from ml.data import get_cifar10_loaders
@@ -1208,17 +1208,19 @@ class Satellite_Manager:
             self._fedpda_isl_print_stats()
 
         self.metrics.print_summary(len(self.satellites), logger=self.sim_logger)
-        # 전략 + ISL + 시드 + alpha별 결과 디렉토리 분리
-        # fedpda + ISL=True만 'fedpda_isl' 태그, 그 외는 전략 이름 그대로
+        # 전략 + ISL + 시드 + alpha + (fedpda 한정 eta_g)별 결과 디렉토리 분리
         if self.strategy == "fedpda" and FEDPDA_ISL_ENABLED:
             strategy_tag = "fedpda_isl"
         else:
             strategy_tag = self.strategy
-        results_dir = f"./results/{strategy_tag}_S{SEED}_{ALPHA_TAG}"
+        # η_g 태그는 fedpda 전략(ISL 포함)일 때만 추가
+        eta_suffix = f"_{ETA_TAG}" if self.strategy == "fedpda" else ""
+        results_dir = f"./results/{strategy_tag}_S{SEED}_{ALPHA_TAG}{eta_suffix}"
         saved = self.metrics.save(output_dir=results_dir)
         self.sim_logger.info(
             f"📁 결과 저장: {saved} "
-            f"(strategy={strategy_tag}, SEED={SEED}, α={DIRICHLET_ALPHA})"
+            f"(strategy={strategy_tag}, SEED={SEED}, α={DIRICHLET_ALPHA}"
+            f"{', η_g='+str(FEDPDA_SERVER_LR) if self.strategy == 'fedpda' else ''})"
         )
         self.sim_logger.info(f"\n=== 시뮬레이션 종료 [{self.strategy.upper()}] ===")
         self.sim_logger.info(f"Total Aggregation Rounds: {self.aggregation_round}")
@@ -1254,18 +1256,20 @@ def main():
             start_time = parse_tle_epoch("constellation.tle")
         duration = timedelta(days=SIM_DURATION_DAYS)
         end_time = start_time + duration
-        # 전략 + ISL 태그로 로그 디렉토리 결정
+        # 전략 + ISL + η_g(fedpda 한정) 태그로 로그 디렉토리 결정
         if AGGREGATION_STRATEGY == "fedpda" and FEDPDA_ISL_ENABLED:
             strategy_log_tag = "fedpda_isl"
         else:
             strategy_log_tag = AGGREGATION_STRATEGY
+        eta_suffix = f"_{ETA_TAG}" if AGGREGATION_STRATEGY == "fedpda" else ""
         sim_logger, perf_logger = setup_loggers(
-            log_dir=f"logs/{strategy_log_tag}_S{SEED}_{ALPHA_TAG}",
-            suffix=f"_S{SEED}_{ALPHA_TAG}",
+            log_dir=f"logs/{strategy_log_tag}_S{SEED}_{ALPHA_TAG}{eta_suffix}",
+            suffix=f"_S{SEED}_{ALPHA_TAG}{eta_suffix}",
         )
         sim_logger.info(f"시뮬레이션: {start_time.isoformat()} ~ {end_time.isoformat()}")
         sim_logger.info(
             f"🎲 strategy={strategy_log_tag}, SEED={SEED}, α={DIRICHLET_ALPHA}"
+            + (f", η_g={FEDPDA_SERVER_LR}" if AGGREGATION_STRATEGY == "fedpda" else "")
         )
         sat_manager = Satellite_Manager(start_time, end_time, sim_logger, perf_logger)
         asyncio.run(sat_manager.run())

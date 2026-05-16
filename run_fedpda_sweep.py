@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
-# run_parallel_sweep.py
+# run_fedpda_sweep.py
 # ============================================================
-# 5개 전략 × N SEED × M α sweep을 동시에 K개씩 병렬 실행
+# satellite_fedpda.py (ISL 미사용 버전)로 sweep을 병렬 실행
 #
-# 메모리 64GB + RTX 4090 (24GB VRAM) 환경 기준
-#   기본값: K=3 (1프로세스당 ~10GB RAM, ~2GB VRAM)
+# 주요 사용 사례:
+#   - Plain FedPDA (ISL 없는 버전) sweep
+#   - ISL 효과 분석용 baseline 생성
+#
+# satellite_fedpda_isl.py 대신 satellite_fedpda.py를 호출하는 것 외에는
+# run_parallel_sweep.py와 동일한 인터페이스.
 #
 # 사용법:
-#   python run_parallel_sweep.py                     # 기본 sweep
-#   python run_parallel_sweep.py --jobs 4            # 4개 병렬
-#   python run_parallel_sweep.py --seeds 42 123      # 시드 지정
-#   python run_parallel_sweep.py --alphas 0.1 0.5    # alpha 지정
-#   python run_parallel_sweep.py --strategies fedpda fedbuff
-#   python run_parallel_sweep.py --dry-run           # 명령만 출력
+#   python run_fedpda_sweep.py                    # FedPDA 전체 sweep
+#   python run_fedpda_sweep.py --jobs 4
+#   python run_fedpda_sweep.py --seeds 42 123
+#   python run_fedpda_sweep.py --strategies fedpda fedbuff
+#   python run_fedpda_sweep.py --dry-run
 # ============================================================
 
 import os
@@ -20,14 +23,14 @@ import sys
 import time
 import argparse
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from itertools import product
 
 STRATEGIES_ALL = ["fedasync", "fedbuff", "fedspace", "fedorbit", "fedpda"]
-SATELLITE_SCRIPT = "satellite_fedpda_isl.py"
-LOG_DIR_ROOT = Path("logs/sweep_parallel")
+SATELLITE_SCRIPT = "satellite_fedpda.py"   # ★ ISL 없는 버전
+LOG_DIR_ROOT = Path("logs/sweep_fedpda_plain")
 
 
 def format_elapsed(seconds: float) -> str:
@@ -49,7 +52,6 @@ def eta_tag(eta: float) -> str:
 def run_one(job):
     """단일 실험 (strategy, seed, alpha, eta_g) 실행"""
     strategy, seed, alpha, eta_g = job
-    # fedpda 전략일 때만 eta tag 포함
     if strategy == "fedpda" and eta_g is not None:
         tag = f"{strategy}_S{seed}_{alpha_tag(alpha)}_{eta_tag(eta_g)}"
     else:
@@ -91,7 +93,7 @@ def run_one(job):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="병렬 sweep 러너 (5 전략 × N 시드 × M α)"
+        description=f"Plain FedPDA sweep 러너 ({SATELLITE_SCRIPT} 사용, ISL 미사용)"
     )
     parser.add_argument(
         "--jobs", "-j", type=int, default=3,
@@ -106,14 +108,13 @@ def main():
         help="alpha 목록 (기본: 0.01 0.1 0.5 1.0)"
     )
     parser.add_argument(
-        "--strategies", nargs="+", default=STRATEGIES_ALL,
+        "--strategies", nargs="+", default=["fedpda"],
         choices=STRATEGIES_ALL,
-        help=f"전략 목록 (기본: 모두)"
+        help="전략 목록 (기본: fedpda만)"
     )
     parser.add_argument(
         "--eta-gs", nargs="+", type=float, default=None,
-        help="η_g 목록 (fedpda 전용, 미지정 시 config 기본값 사용). "
-             "예: --eta-gs 0.1 0.3 0.5 0.7 1.0"
+        help="η_g 목록 (fedpda 전용). 예: --eta-gs 0.1 0.3 0.5 0.7 1.0"
     )
     parser.add_argument(
         "--dry-run", action="store_true",
@@ -122,7 +123,6 @@ def main():
     args = parser.parse_args()
 
     # 작업 목록 생성
-    # fedpda에는 eta_gs 적용, 다른 전략은 eta=None (config 기본값 사용)
     jobs = []
     for strategy, seed, alpha in product(args.strategies, args.seeds, args.alphas):
         if strategy == "fedpda" and args.eta_gs:
@@ -133,7 +133,7 @@ def main():
     total = len(jobs)
 
     print(f"\n{'#'*70}")
-    print(f"  병렬 Sweep 시작")
+    print(f"  Plain FedPDA Sweep 시작 ({SATELLITE_SCRIPT}, ISL 미사용)")
     print(f"{'#'*70}")
     print(f"  전략     : {args.strategies}")
     print(f"  시드     : {args.seeds}")
@@ -143,6 +143,7 @@ def main():
     print(f"  총 실험  : {total}")
     print(f"  병렬     : {args.jobs}개 동시 실행")
     print(f"  로그 경로: {LOG_DIR_ROOT}/")
+    print(f"  결과 경로: results/{{strategy}}_S{{SEED}}_A{{α}}/  (ISL 태그 없음)")
     print(f"  시작     : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'#'*70}\n")
 

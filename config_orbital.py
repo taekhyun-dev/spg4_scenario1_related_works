@@ -65,7 +65,11 @@ BUFFER_MIN_SIZE = 3                             # flush 최소 버퍼
 BUFFER_MAX_SIZE = 15                            # 강제 flush 상한
 BUFFER_MIN_DIVERSITY = 1                        # flush 최소 궤도면 다양성 (1=다양성 제약 해제)
 BUFFER_TIMEOUT_SEC = 3600                       # 다양성 대기 timeout (1시간)
-SERVER_LR = 0.37                                 # η_g: 글로벌 50% 보존 + 로컬 50% 반영
+# 환경변수 ORBITAL_FL_ETA_G로 오버라이드 가능 (sweep용)
+SERVER_LR = float(os.environ.get("ORBITAL_FL_ETA_G", 0.37))  # η_g
+
+# η_g 태그 (결과 경로용): 0.1 → E01, 0.7 → E07
+ETA_TAG = f"E{int(SERVER_LR * 10):02d}"
 SERVER_MOMENTUM = 0.0                           # β=0: 모멘텀 비활성화
 
 # === Master 간 동기화 ===

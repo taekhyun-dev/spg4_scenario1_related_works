@@ -56,7 +56,11 @@ FEDPDA_MIN_DIVERSITY = 2            # flush 최소 궤도면 다양성
 FEDPDA_MAX_BUFFER = 15              # 강제 flush 버퍼 상한
 FEDPDA_TIMEOUT_SEC = 1800           # 다양성 대기 timeout (s)
 FEDPDA_SERVER_MOMENTUM = 0.0        # β=0: 모멘텀 발산 방지
-FEDPDA_SERVER_LR = 0.37              # η_g=0.7: 글로벌 30% 보존 + 로컬 70% 반영
+# 환경변수 ORBITAL_FL_ETA_G로 오버라이드 가능 (sweep용, 기본 0.37)
+FEDPDA_SERVER_LR = float(os.environ.get("ORBITAL_FL_ETA_G", 0.37))  # η_g
+
+# η_g 태그 (FedPDA 결과 경로용): 0.1 → E01, 0.7 → E07, 1.0 → E10
+ETA_TAG = f"E{int(FEDPDA_SERVER_LR * 10):02d}"
 
 # === FedPDA ISL Extension ===
 # ISL 비교 실험: True/False 전환으로 ISL 유무 비교

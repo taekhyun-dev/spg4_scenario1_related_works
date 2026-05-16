@@ -36,7 +36,7 @@ from config_orbital import (
     SERVER_LR, SERVER_MOMENTUM,
     SYNC_AFTER_FLUSH,
     EVAL_EVERY_N_ROUNDS, STALENESS_THRESHOLD,
-    SEED, ALPHA_TAG,
+    SEED, ALPHA_TAG, ETA_TAG,
 )
 
 from ml.data import get_cifar10_loaders
@@ -760,9 +760,11 @@ class OrbitalFLManager:
         self.sim_logger.info(f"    동기화 지연: {self.sync_delay:.1f}초")
         self.sim_logger.info(f"    경로: ring relay (인접 면 경유, {math.ceil(NUM_MASTERS/2)}라운드)")
 
-        # 메트릭 저장 (NUM_MASTERS, SEED, ALPHA별로 분리)
+        # 메트릭 저장 (NUM_MASTERS, SEED, ALPHA, ETA별로 분리)
         self.metrics.print_summary(TOTAL_SATS, logger=self.sim_logger)
-        results_dir = Path(f"results/orbital_fl_M{NUM_MASTERS}_S{SEED}_{ALPHA_TAG}")
+        results_dir = Path(
+            f"results/orbital_fl_M{NUM_MASTERS}_S{SEED}_{ALPHA_TAG}_{ETA_TAG}"
+        )
         results_dir.mkdir(parents=True, exist_ok=True)
         self.metrics.save(str(results_dir))
         self.sim_logger.info(f"\n  결과 저장: {results_dir}/")
@@ -774,7 +776,7 @@ class OrbitalFLManager:
 # ================================================================
 
 async def main():
-    log_dir = Path(f"logs/orbital_fl_M{NUM_MASTERS}_S{SEED}_{ALPHA_TAG}")
+    log_dir = Path(f"logs/orbital_fl_M{NUM_MASTERS}_S{SEED}_{ALPHA_TAG}_{ETA_TAG}")
     log_dir.mkdir(parents=True, exist_ok=True)
     # sim_logger, perf_logger = setup_loggers(
     #     sim_log_path=str(log_dir / "simulation.log"),
