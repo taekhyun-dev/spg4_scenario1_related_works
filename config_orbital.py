@@ -57,7 +57,17 @@ NUM_CLIENTS = TOTAL_SATS                        # 238 (Worker+Master 모두 데�
 # 환경변수 ORBITAL_FL_ALPHA로 오버라이드 가능 (0.1=severe, 0.5=moderate)
 DIRICHLET_ALPHA = float(os.environ.get("ORBITAL_FL_ALPHA", 0.5))  # Non-IID 강도
 BATCH_SIZE = 128
-SAMPLES_PER_CLIENT = 2000
+
+# 데이터셋 선택: cifar10 | eurosat
+# 환경변수 ORBITAL_FL_DATASET로 오버라이드 가능
+DATASET = os.environ.get("ORBITAL_FL_DATASET", "cifar10").lower()
+assert DATASET in ("cifar10", "eurosat"), f"지원하지 않는 데이터셋: {DATASET}"
+
+# 데이터셋별 위성당 샘플 수 (EuroSAT은 풀이 작아 1500으로 설정)
+SAMPLES_PER_CLIENT = 2000 if DATASET == "cifar10" else 1500
+
+# 데이터셋 태그 (결과 경로용): cifar10 → C10, eurosat → ES
+DATASET_TAG = {"cifar10": "C10", "eurosat": "ES"}[DATASET]
 
 # === 집계 (FedPDA 기반) ===
 # Master 로컬 집계 파라미터

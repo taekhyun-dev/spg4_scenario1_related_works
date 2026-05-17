@@ -37,9 +37,10 @@ from config_orbital import (
     SYNC_AFTER_FLUSH,
     EVAL_EVERY_N_ROUNDS, STALENESS_THRESHOLD,
     SEED, ALPHA_TAG, ETA_TAG,
+    DATASET, DATASET_TAG,
 )
 
-from ml.data import get_cifar10_loaders
+from ml.data import get_cifar10_loaders, get_eurosat_loaders
 from ml.model import create_resnet9, PyTorchModel
 from ml.training import train_model
 from ml.metrics import MetricsCollector
@@ -156,15 +157,30 @@ class OrbitalFLManager:
         self.satellite_last_trained_version: Dict[int, float] = {}
         self.satellite_base_state: Dict[int, OrderedDict] = {}
 
-        # 글로벌 모델
-        self.sim_logger.info("CIFAR-10 데이터셋 로드 중...")
-        self.avg_data_count, self.client_subsets, self.val_loader, _ = get_cifar10_loaders(
-            num_clients=NUM_CLIENTS,
-            dirichlet_alpha=DIRICHLET_ALPHA,
-            data_root='./data',
-            samples_per_client=SAMPLES_PER_CLIENT
+        # 글로벌 모델: 데이터셋 선택 분기
+        self.sim_logger.info(f"📊 데이터셋: {DATASET.upper()} 로드 중...")
+        if DATASET == "cifar10":
+            self.avg_data_count, self.client_subsets, self.val_loader, _ = \
+                get_cifar10_loaders(
+                    num_clients=NUM_CLIENTS,
+                    dirichlet_alpha=DIRICHLET_ALPHA,
+                    data_root='./data',
+                    samples_per_client=SAMPLES_PER_CLIENT,
+                )
+        elif DATASET == "eurosat":
+            self.avg_data_count, self.client_subsets, self.val_loader, _ = \
+                get_eurosat_loaders(
+                    num_clients=NUM_CLIENTS,
+                    dirichlet_alpha=DIRICHLET_ALPHA,
+                    data_root='./data',
+                    samples_per_client=SAMPLES_PER_CLIENT,
+                    image_size=32,           # ResNet-9 호환
+                )
+        else:
+            raise ValueError(f"지원하지 않는 데이터셋: {DATASET}")
+        self.sim_logger.info(
+            f"데이터셋 로드 완료. 위성당 데이터: {self.avg_data_count:.0f}장 ({DATASET})"
         )
-        self.sim_logger.info(f"데이터셋 로드 완료. 위성당 데이터: {self.avg_data_count:.0f}장")
 
         self.global_model_net = create_resnet9(num_classes=10)
         self.global_model_net.to('cpu')
@@ -760,10 +776,11 @@ class OrbitalFLManager:
         self.sim_logger.info(f"    동기화 지연: {self.sync_delay:.1f}초")
         self.sim_logger.info(f"    경로: ring relay (인접 면 경유, {math.ceil(NUM_MASTERS/2)}라운드)")
 
-        # 메트릭 저장 (NUM_MASTERS, SEED, ALPHA, ETA별로 분리)
+        # 메트릭 저장 (DATASET, NUM_MASTERS, SEED, ALPHA, ETA별로 분리)
         self.metrics.print_summary(TOTAL_SATS, logger=self.sim_logger)
         results_dir = Path(
-            f"results/orbital_fl_M{NUM_MASTERS}_S{SEED}_{ALPHA_TAG}_{ETA_TAG}"
+            f"results/orbital_fl_{DATASET_TAG}_M{NUM_MASTERS}"
+            f"_S{SEED}_{ALPHA_TAG}_{ETA_TAG}"
         )
         results_dir.mkdir(parents=True, exist_ok=True)
         self.metrics.save(str(results_dir))
@@ -776,7 +793,10 @@ class OrbitalFLManager:
 # ================================================================
 
 async def main():
-    log_dir = Path(f"logs/orbital_fl_M{NUM_MASTERS}_S{SEED}_{ALPHA_TAG}_{ETA_TAG}")
+    log_dir = Path(
+        f"logs/orbital_fl_{DATASET_TAG}_M{NUM_MASTERS}"
+        f"_S{SEED}_{ALPHA_TAG}_{ETA_TAG}"
+    )
     log_dir.mkdir(parents=True, exist_ok=True)
     # sim_logger, perf_logger = setup_loggers(
     #     sim_log_path=str(log_dir / "simulation.log"),
