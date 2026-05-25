@@ -50,8 +50,8 @@ def eta_tag(eta: float) -> str:
 
 
 def run_one(job):
-    """단일 실험 (strategy, seed, alpha, eta_g) 실행"""
-    strategy, seed, alpha, eta_g = job
+    """단일 실험 (strategy, seed, alpha, eta_g, job_idx) 실행"""
+    strategy, seed, alpha, eta_g, job_idx = job
     if strategy == "fedpda" and eta_g is not None:
         tag = f"{strategy}_S{seed}_{alpha_tag(alpha)}_{eta_tag(eta_g)}"
     else:
@@ -60,11 +60,21 @@ def run_one(job):
     LOG_DIR_ROOT.mkdir(parents=True, exist_ok=True)
     log_path = LOG_DIR_ROOT / f"{tag}.log"
 
+    gpu_ids_env = os.environ.get("SWEEP_GPU_IDS", "0,1")
+    gpu_ids = [g.strip() for g in gpu_ids_env.split(",") if g.strip()]
+    assigned_gpu = gpu_ids[job_idx % len(gpu_ids)]
+
     env = {
         **os.environ,
         "ORBITAL_FL_STRATEGY": strategy,
         "ORBITAL_FL_SEED": str(seed),
         "ORBITAL_FL_ALPHA": str(alpha),
+        "CUDA_VISIBLE_DEVICES": assigned_gpu,
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "VECLIB_MAXIMUM_THREADS": "1",
     }
     if strategy == "fedpda" and eta_g is not None:
         env["ORBITAL_FL_ETA_G"] = str(eta_g)
@@ -104,8 +114,8 @@ def main():
         help="시드 목록 (기본: 42 123 7777)"
     )
     parser.add_argument(
-        "--alphas", nargs="+", type=float, default=[0.01, 0.1, 0.5, 1.0],
-        help="alpha 목록 (기본: 0.01 0.1 0.5 1.0)"
+        "--alphas", nargs="+", type=float, default=[0.1, 0.5, 1.0],
+        help="alpha 목록 (기본: 0.1 0.5 1.0)"
     )
     parser.add_argument(
         "--strategies", nargs="+", default=["fedpda"],
@@ -123,13 +133,14 @@ def main():
     args = parser.parse_args()
 
     # 작업 목록 생성
-    jobs = []
+    raw_jobs = []
     for strategy, seed, alpha in product(args.strategies, args.seeds, args.alphas):
         if strategy == "fedpda" and args.eta_gs:
             for eta in args.eta_gs:
-                jobs.append((strategy, seed, alpha, eta))
+                raw_jobs.append((strategy, seed, alpha, eta))
         else:
-            jobs.append((strategy, seed, alpha, None))
+            raw_jobs.append((strategy, seed, alpha, None))
+    jobs = [(*j, idx) for idx, j in enumerate(raw_jobs)]
     total = len(jobs)
 
     print(f"\n{'#'*70}")
@@ -149,7 +160,7 @@ def main():
 
     if args.dry_run:
         print("[Dry-run] 실행할 명령:")
-        for strategy, seed, alpha, eta_g in jobs:
+        for strategy, seed, alpha, eta_g, _ in jobs:
             eta_env = f"ORBITAL_FL_ETA_G={eta_g} " if eta_g is not None else ""
             print(
                 f"  ORBITAL_FL_STRATEGY={strategy} "

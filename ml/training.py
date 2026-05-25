@@ -3,7 +3,7 @@ from torchmetrics import JaccardIndex
 import torch
 import torch.nn as nn
 import torch.optim.lr_scheduler as lr_scheduler
-from torch.amp import autocast
+from torch.amp import autocast, GradScaler
 from .model import create_mobilenet, create_resnet9
 from config import FEDPROX_MU
 
@@ -11,10 +11,7 @@ IMAGENET_CLASSES = 1000
 CIFAR_CLASSES = 10
 
 def train_model(model, global_state_dict, train_loader, epochs=1, lr=0.01, device='cuda', sim_logger=None):
-    """
-    ResNet9 로컬 학습 (FedProx 포함).
-    float32 학습 — ResNet9 + CIFAR-10은 모델이 작아 AMP 불필요.
-    """
+    """ResNet9 로컬 학습 (FedProx 포함). AMP(FP16) + cuDNN benchmark로 가속."""
     try:
         loader_length = len(train_loader)
         sim_logger.info(f"✅ [Train] 배치 개수: {loader_length}")
@@ -28,7 +25,6 @@ def train_model(model, global_state_dict, train_loader, epochs=1, lr=0.01, devic
     model.to(device)
     model.train()
 
-    # FedProx: 글로벌 모델 (gradient 불필요)
     global_model = create_resnet9(num_classes=CIFAR_CLASSES)
     global_model.load_state_dict(global_state_dict)
     global_model.to(device)
@@ -39,28 +35,30 @@ def train_model(model, global_state_dict, train_loader, epochs=1, lr=0.01, devic
     optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=1e-4)
     scheduler = lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.95)
     criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
+    scaler = GradScaler('cuda')
 
     samples_count = 0
 
     for epoch in range(epochs):
         sim_logger.info(f"              에포크 {epoch+1}/{epochs} 진행 중...")
         for images, labels in train_loader:
-            images, labels = images.to(device), labels.to(device)
-            optimizer.zero_grad()
+            images = images.to(device, non_blocking=True)
+            labels = labels.to(device, non_blocking=True)
+            optimizer.zero_grad(set_to_none=True)
 
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+            with autocast('cuda'):
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                prox_term = 0.0
+                for local_param, global_param in zip(model.parameters(), global_model.parameters()):
+                    prox_term = prox_term + torch.sum((local_param - global_param.detach()) ** 2)
+                total_loss = loss + (FEDPROX_MU / 2) * prox_term
 
-            # FedProx 근접 항: (μ/2) * ||w - w^t||^2
-            prox_term = 0.0
-            for local_param, global_param in zip(model.parameters(), global_model.parameters()):
-                prox_term += torch.sum((local_param - global_param.detach()) ** 2)
-
-            total_loss = loss + (FEDPROX_MU / 2) * prox_term
-
-            total_loss.backward()
+            scaler.scale(total_loss).backward()
+            scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            optimizer.step()
+            scaler.step(optimizer)
+            scaler.update()
 
             samples_count += labels.size(0)
 
@@ -96,8 +94,7 @@ def evaluate_model(model_state_dict, data_loader, device):
         for images, labels in data_loader:
             images, labels = images.to(device), labels.to(device)
 
-            # [최적화] 추론 시에도 AMP 사용 가능 (속도 향상)
-            with autocast():
+            with autocast('cuda'):
                 outputs = model(images)
                 loss = criterion(outputs, labels)
 

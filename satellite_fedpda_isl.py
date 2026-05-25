@@ -1055,7 +1055,7 @@ class Satellite_Manager:
 
                 train_loader = DataLoader(
                     dataset, batch_size=BATCH_SIZE, shuffle=True,
-                    num_workers=8, pin_memory=True,
+                    num_workers=2, pin_memory=True,
                     worker_init_fn=seed_worker,
                     generator=torch.Generator().manual_seed(SEED)
                 )
@@ -1248,8 +1248,9 @@ def main():
         np.random.seed(SEED)
         torch.manual_seed(SEED)
         torch.cuda.manual_seed_all(SEED)
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = False
+        torch.backends.cudnn.benchmark = True
+        torch.set_float32_matmul_precision('high')
         if SIM_START_TIME is not None:
             start_time = SIM_START_TIME
         else:
