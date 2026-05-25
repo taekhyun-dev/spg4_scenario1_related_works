@@ -104,8 +104,8 @@ def main():
         help="시드 목록 (기본: 42 123 7777)"
     )
     parser.add_argument(
-        "--alphas", nargs="+", type=float, default=[0.01, 0.1, 0.5, 1.0],
-        help="alpha 목록 (기본: 0.01 0.1 0.5 1.0)"
+        "--alphas", nargs="+", type=float, default=[0.1, 0.5, 1.0],
+        help="alpha 목록 (기본: 0.1 0.5 1.0)"
     )
     parser.add_argument(
         "--strategies", nargs="+", default=["fedpda"],
